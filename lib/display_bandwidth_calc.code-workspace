@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "BandwidthCalculator-1",
+			"path": "../BandwidthCalculator-1"
+		},
+		{
+			"name": "BandwidthCalculator-2",
+			"path": "../BandwidthCalculator-2"
+		}
+	],
+	"settings": {}
+}
