@@ -1,0 +1,8 @@
+version: "Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)"
+options: "9a1a92567da5ba281853eeb8aa848932366c22d4c906cd6a3183548b7eafb970"
+build_start_time: [1668134263, 525987148]
+build_end_time: [1668134268, 196709156]
+inputs:
+  "/Users/hominlim/FlutterProjects/display_bandwidth_calc/macos/Flutter/GeneratedPluginRegistrant.swift": [1668134227, 287149906]
+  "/Users/hominlim/FlutterProjects/display_bandwidth_calc/macos/Runner/AppDelegate.swift": [1634272600, 0]
+  "/Users/hominlim/FlutterProjects/display_bandwidth_calc/macos/Runner/MainFlutterWindow.swift": [1634272600, 0]
