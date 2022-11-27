@@ -19,53 +19,57 @@ class _TconInputScreenState extends State<TconInputScreen> {
   final _ddrSpeedController = TextEditingController(text: "1866");
   final _ddrWidthController = TextEditingController(text: "16");
 
-  var bps_calc_video = 0;
-  var bps_calc_result_gibps = 0;
-  var bps_calc_ddr = 0;
-  var _resultDisplay = 0.00;
-
-  String _resultDimmension = 'bps';
-  String _resultString = '';
-  String _resultVString = '';
-  String _resultHString = '';
+  double bps_calc_video = 0;
+  double bps_calc_result_gibps = 0;
+  double bps_calc_ddr = 0;
+  double _resultDisplay = 0.00;
 
   double vertical_time = 0;
   double horizontal_time = 0;
 
+  double storage_video_result_mbits = 0;
+  double _horizontalTimeSliderValue = 10;
+
   @override
   void initState() {
+    _bpsCalcResult();
     super.initState();
   }
 
-  void _bpsCalcResult(String bps) {
-    var number_of_column = int.parse(_columnController.text);
-    var number_of_row = int.parse(_rowController.text);
-    var frame_frequency = int.parse(_fpsController.text);
-    var number_of_color = int.parse(_colorController.text);
-    var data_width = int.parse(_dataWidthController.text);
-    var ddr_speed = int.parse(_ddrSpeedController.text);
-    var ddr_width = int.parse(_ddrWidthController.text);
+  void _bpsCalcResult() {
+    var number_of_column = double.parse(_columnController.text);
+    var number_of_row = double.parse(_rowController.text);
+    var frame_frequency = double.parse(_fpsController.text);
+    var number_of_color = double.parse(_colorController.text);
+    var data_width = double.parse(_dataWidthController.text);
+    var ddr_speed = double.parse(_ddrSpeedController.text);
+    var ddr_width = double.parse(_ddrWidthController.text);
 
-    bps_calc_video = number_of_column *
-        number_of_row *
-        frame_frequency *
-        number_of_color *
-        data_width;
+    setState(() {
+      bps_calc_video = number_of_column *
+          number_of_row *
+          frame_frequency *
+          number_of_color *
+          data_width;
 
-    bps_calc_ddr = ddr_speed * ddr_width;
+      bps_calc_ddr = ddr_speed * ddr_width / 1024;
 
-    vertical_time = (1 / frame_frequency);
-    horizontal_time = vertical_time / number_of_row;
+      vertical_time = (1 / frame_frequency);
+      // _horizontalTimeSliderValue.round().toString(),
+      horizontal_time = (1 - _horizontalTimeSliderValue / 100) *
+          vertical_time /
+          number_of_row *
+          1000000;
 
-    bps_calc_result_gibps =
-        (bps_calc_video.toDouble() / 1024 / 1024 / 1024) as int;
+      bps_calc_result_gibps = bps_calc_video / 1024 / 1024 / 1024;
 
-    _resultDimmension = bps;
-    _resultString = NumberFormat('###,###,###,###.###').format(_resultDisplay);
-    _resultVString = NumberFormat('###.###').format(vertical_time * 1000);
-    _resultHString =
-        NumberFormat('###.###').format(horizontal_time * 1000 * 1000);
-    setState(() {});
+      storage_video_result_mbits = number_of_column *
+          number_of_row *
+          number_of_color *
+          data_width /
+          1024 /
+          1024;
+    });
   }
 
   @override
@@ -120,14 +124,12 @@ class _TconInputScreenState extends State<TconInputScreen> {
                   controller: _colorController,
                 )),
                 Expanded(
-                  child: Text('${bps_calc_result_gibps}, Gibps'),
-                  // Text(
-                  //   '$_resultString',
-                  //   textAlign: TextAlign.center,
-                  //   style: TextStyle(
-                  //     fontSize: 25,
-                  //   ),
-                  // ),
+                  child: Text(
+                      '${NumberFormat('##.###').format(bps_calc_result_gibps)} Gibps',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                      )),
                 ),
               ],
             ),
@@ -151,7 +153,12 @@ class _TconInputScreenState extends State<TconInputScreen> {
                   controller: _ddrWidthController,
                 )),
                 Expanded(
-                  child: Text('${bps_calc_result_gibps}, Gibps'),
+                  child: Text(
+                      '${NumberFormat('##.###').format(bps_calc_ddr)} Gibps',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                      )),
                 ),
               ],
             ),
@@ -161,16 +168,20 @@ class _TconInputScreenState extends State<TconInputScreen> {
             Row(
               children: [
                 Slider(
-                  value: 20,
-                  max: 100,
-                  divisions: 5,
-                  label: '20',
+                  value: _horizontalTimeSliderValue,
+                  max: 20,
+                  divisions: 20,
+                  label: _horizontalTimeSliderValue.round().toString(),
                   onChanged: (double value) {
-                    setState(() {});
+                    setState(() {
+                      _horizontalTimeSliderValue = value;
+                      // _bpsCalcResult();
+                      print(horizontal_time);
+                    });
                   },
                 ),
                 Text(
-                  '1H : $_resultHString us',
+                  '${NumberFormat('##.###').format(horizontal_time)} us',
                   style: TextStyle(fontSize: 20),
                 ),
               ],
@@ -178,16 +189,18 @@ class _TconInputScreenState extends State<TconInputScreen> {
             Row(
               children: [
                 Slider(
-                  value: 20,
-                  max: 100,
+                  value: _horizontalTimeSliderValue,
+                  max: 20,
                   divisions: 5,
-                  label: '20',
+                  label: _horizontalTimeSliderValue.round().toString(),
                   onChanged: (double value) {
-                    setState(() {});
+                    setState(() {
+                      _horizontalTimeSliderValue = value;
+                    });
                   },
                 ),
                 Text(
-                  'xxx Mibits',
+                  '${NumberFormat('##.###').format(storage_video_result_mbits)} Mbits',
                   style: TextStyle(fontSize: 20),
                 ),
               ],
