@@ -1,4 +1,4 @@
-import 'package:display_bandwidth_calc/screens/system_link_screen.dart';
+import 'package:display_bandwidth_calc/screens/tcon_input_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'screens/memory_screen.dart';
@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
           body: TabBarView(
             physics: NeverScrollableScrollPhysics(),
             children: [
-              SystemLinkScreen(),
+              TconInputScreen(),
               MemoryScreen(),
               Container(),
               Container(),
