@@ -140,6 +140,18 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "syncfusion_flutter_core",
+      "rootUri": "file:///Users/hominlim/development/flutter/.pub-cache/hosted/pub.dartlang.org/syncfusion_flutter_core-20.3.59",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "syncfusion_flutter_sliders",
+      "rootUri": "file:///Users/hominlim/development/flutter/.pub-cache/hosted/pub.dartlang.org/syncfusion_flutter_sliders-20.3.59",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "term_glyph",
       "rootUri": "file:///Users/hominlim/development/flutter/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.2.1",
       "packageUri": "lib/",
@@ -164,7 +176,7 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2022-11-11T02:37:07.042980Z",
+  "generated": "2022-12-01T11:23:06.840329Z",
   "generator": "pub",
   "generatorVersion": "2.18.4"
 }

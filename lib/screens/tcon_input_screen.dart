@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 class TconInputScreen extends StatefulWidget {
   const TconInputScreen({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class TconInputScreen extends StatefulWidget {
 }
 
 class _TconInputScreenState extends State<TconInputScreen> {
-  final _formKey = GlobalKey<FormState>(); // 폼의 상태를 얻기 위한 키
+// 폼의 상태를 얻기 위한 키
   final _columnController = TextEditingController(text: "3840");
   final _rowController = TextEditingController(text: "2160");
   final _fpsController = TextEditingController(text: "120");
@@ -29,6 +29,7 @@ class _TconInputScreenState extends State<TconInputScreen> {
 
   double storage_video_result_mbits = 0;
   double _horizontalTimeSliderValue = 10;
+  double _storage_video_compression_ration = 50;
 
   @override
   void initState() {
@@ -55,7 +56,6 @@ class _TconInputScreenState extends State<TconInputScreen> {
       bps_calc_ddr = ddr_speed * ddr_width / 1024;
 
       vertical_time = (1 / frame_frequency);
-      // _horizontalTimeSliderValue.round().toString(),
       horizontal_time = (1 - _horizontalTimeSliderValue / 100) *
           vertical_time /
           number_of_row *
@@ -63,12 +63,14 @@ class _TconInputScreenState extends State<TconInputScreen> {
 
       bps_calc_result_gibps = bps_calc_video / 1024 / 1024 / 1024;
 
-      storage_video_result_mbits = number_of_column *
-          number_of_row *
-          number_of_color *
-          data_width /
-          1024 /
-          1024;
+      storage_video_result_mbits =
+          (1 - _storage_video_compression_ration / 100) *
+              number_of_column *
+              number_of_row *
+              number_of_color *
+              data_width /
+              1024 /
+              1024;
     });
   }
 
@@ -111,6 +113,9 @@ class _TconInputScreenState extends State<TconInputScreen> {
                 )),
               ],
             ),
+            const SizedBox(
+              height: 10.0,
+            ),
             Row(
               children: [
                 Expanded(
@@ -128,17 +133,13 @@ class _TconInputScreenState extends State<TconInputScreen> {
                       '${NumberFormat('##.###').format(bps_calc_result_gibps)} Gibps',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 17,
                       )),
                 ),
               ],
             ),
-            const Divider(
-              height: 50,
-              thickness: 1,
-              indent: 20,
-              endIndent: 0,
-              color: Colors.black45,
+            const SizedBox(
+              height: 10.0,
             ),
             Row(
               children: [
@@ -157,26 +158,34 @@ class _TconInputScreenState extends State<TconInputScreen> {
                       '${NumberFormat('##.###').format(bps_calc_ddr)} Gibps',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 17,
                       )),
                 ),
               ],
             ),
             const SizedBox(
-              height: 16.0,
+              height: 10.0,
+            ),
+            const SizedBox(
+              height: 50.0,
             ),
             Row(
               children: [
-                Slider(
+                SfSlider(
                   value: _horizontalTimeSliderValue,
+                  min: 0,
                   max: 20,
-                  divisions: 20,
-                  label: _horizontalTimeSliderValue.round().toString(),
-                  onChanged: (double value) {
+                  showTicks: true,
+                  showLabels: true,
+                  showDividers: true,
+                  interval: 10,
+                  stepSize: 1,
+                  enableTooltip: true,
+                  shouldAlwaysShowTooltip: true,
+                  onChanged: (dynamic value) {
                     setState(() {
                       _horizontalTimeSliderValue = value;
-                      // _bpsCalcResult();
-                      print(horizontal_time);
+                      _bpsCalcResult();
                     });
                   },
                 ),
@@ -186,16 +195,26 @@ class _TconInputScreenState extends State<TconInputScreen> {
                 ),
               ],
             ),
+            const SizedBox(
+              height: 50.0,
+            ),
             Row(
               children: [
-                Slider(
-                  value: _horizontalTimeSliderValue,
-                  max: 20,
-                  divisions: 5,
-                  label: _horizontalTimeSliderValue.round().toString(),
-                  onChanged: (double value) {
+                SfSlider(
+                  value: _storage_video_compression_ration,
+                  min: 0,
+                  max: 100,
+                  showTicks: true,
+                  showLabels: true,
+                  showDividers: true,
+                  interval: 25,
+                  stepSize: 1,
+                  enableTooltip: true,
+                  shouldAlwaysShowTooltip: true,
+                  onChanged: (dynamic value) {
                     setState(() {
-                      _horizontalTimeSliderValue = value;
+                      _storage_video_compression_ration = value;
+                      _bpsCalcResult();
                     });
                   },
                 ),
