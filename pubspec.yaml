@@ -39,6 +39,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   syncfusion_flutter_sliders: ^20.3.59
+  toggle_switch: ^2.0.1
+  flutter_provider: ^2.1.0
+  provider: ^6.0.4
 
 dev_dependencies:
   flutter_test:

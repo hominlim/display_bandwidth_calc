@@ -68,6 +68,12 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "flutter_provider",
+      "rootUri": "file:///Users/hominlim/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_provider-2.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///Users/hominlim/development/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -104,8 +110,20 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "nested",
+      "rootUri": "file:///Users/hominlim/development/flutter/.pub-cache/hosted/pub.dartlang.org/nested-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "path",
       "rootUri": "file:///Users/hominlim/development/flutter/.pub-cache/hosted/pub.dartlang.org/path-1.8.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "provider",
+      "rootUri": "file:///Users/hominlim/development/flutter/.pub-cache/hosted/pub.dartlang.org/provider-6.0.4",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -164,6 +182,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "toggle_switch",
+      "rootUri": "file:///Users/hominlim/development/flutter/.pub-cache/hosted/pub.dartlang.org/toggle_switch-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "vector_math",
       "rootUri": "file:///Users/hominlim/development/flutter/.pub-cache/hosted/pub.dartlang.org/vector_math-2.1.2",
       "packageUri": "lib/",
@@ -176,7 +200,7 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2022-12-01T11:23:06.840329Z",
+  "generated": "2022-12-03T08:58:01.102548Z",
   "generator": "pub",
-  "generatorVersion": "2.18.4"
+  "generatorVersion": "2.18.5"
 }

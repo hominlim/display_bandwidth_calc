@@ -1,6 +1,9 @@
+import 'dart:ffi';
+import 'package:display_bandwidth_calc/main.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_sliders/sliders.dart';
+import 'package:display_bandwidth_calc/calculators/bps_calculator.dart';
+import 'package:provider/provider.dart';
 
 class TconInputScreen extends StatefulWidget {
   const TconInputScreen({Key? key}) : super(key: key);
@@ -10,84 +13,53 @@ class TconInputScreen extends StatefulWidget {
 }
 
 class _TconInputScreenState extends State<TconInputScreen> {
-// 폼의 상태를 얻기 위한 키
-  final _columnController = TextEditingController(text: "3840");
-  final _rowController = TextEditingController(text: "2160");
-  final _fpsController = TextEditingController(text: "120");
-  final _colorController = TextEditingController(text: "3");
-  final _dataWidthController = TextEditingController(text: "10");
-  final _ddrSpeedController = TextEditingController(text: "1866");
-  final _ddrWidthController = TextEditingController(text: "16");
+  BpsCalc bps = BpsCalc();
 
-  double bps_calc_video = 0;
-  double bps_calc_result_gibps = 0;
-  double bps_calc_ddr = 0;
-  double _resultDisplay = 0.00;
-
-  double vertical_time = 0;
-  double horizontal_time = 0;
-
-  double storage_video_result_mbits = 0;
-  double _horizontalTimeSliderValue = 10;
-  double _storage_video_compression_ration = 50;
+  final columnController = TextEditingController(text: "3840");
+  final rowController = TextEditingController(text: "2160");
+  final fpsController = TextEditingController(text: "120");
+  final colorController = TextEditingController(text: "3");
+  final dataWidthController = TextEditingController(text: "10");
+  final ddrSpeedController = TextEditingController(text: "1866");
+  final ddrWidthController = TextEditingController(text: "16");
 
   @override
   void initState() {
-    _bpsCalcResult();
     super.initState();
+
+    bps.columnUpdate(double.parse(columnController.text));
+    bps.rowUpdate(double.parse(rowController.text));
+    bps.fpsUpdate(double.parse(fpsController.text));
+    bps.dataWidthUpdata(double.parse(colorController.text));
+    bps.colorUpdate(double.parse(dataWidthController.text));
+    bps.bpsCalculate();
   }
 
-  void _bpsCalcResult() {
-    var number_of_column = double.parse(_columnController.text);
-    var number_of_row = double.parse(_rowController.text);
-    var frame_frequency = double.parse(_fpsController.text);
-    var number_of_color = double.parse(_colorController.text);
-    var data_width = double.parse(_dataWidthController.text);
-    var ddr_speed = double.parse(_ddrSpeedController.text);
-    var ddr_width = double.parse(_ddrWidthController.text);
-
-    setState(() {
-      bps_calc_video = number_of_column *
-          number_of_row *
-          frame_frequency *
-          number_of_color *
-          data_width;
-
-      bps_calc_ddr = ddr_speed * ddr_width / 1024;
-
-      vertical_time = (1 / frame_frequency);
-      horizontal_time = (1 - _horizontalTimeSliderValue / 100) *
-          vertical_time /
-          number_of_row *
-          1000000;
-
-      bps_calc_result_gibps = bps_calc_video / 1024 / 1024 / 1024;
-
-      storage_video_result_mbits =
-          (1 - _storage_video_compression_ration / 100) *
-              number_of_column *
-              number_of_row *
-              number_of_color *
-              data_width /
-              1024 /
-              1024;
-    });
+  void refreshUI() {
+    context.read<BpsCalc>().columnUpdate(double.parse(columnController.text));
+    context.read<BpsCalc>().rowUpdate(double.parse(rowController.text));
+    context.read<BpsCalc>().fpsUpdate(double.parse(fpsController.text));
+    context
+        .read<BpsCalc>()
+        .dataWidthUpdata(double.parse(dataWidthController.text));
+    context.read<BpsCalc>().colorUpdate(double.parse(colorController.text));
+    context.read<BpsCalc>().bpsCalculate();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bandwidth Calculator'),
+        title: const Text('Bandwidth Calculator'),
       ),
       body: Container(
-        margin: EdgeInsets.only(left: 10, right: 30),
+        margin: const EdgeInsets.only(left: 10, right: 30),
         child: Column(
           children: [
             const SizedBox(
               height: 16.0,
             ),
-            Text(
+            const Text(
               'T-Con Input',
               style: TextStyle(fontSize: 20),
             ),
@@ -98,18 +70,32 @@ class _TconInputScreenState extends State<TconInputScreen> {
               children: [
                 Expanded(
                     child: TextField(
-                  decoration: InputDecoration(labelText: "Column"),
-                  controller: _columnController,
+                  decoration: const InputDecoration(labelText: "Column"),
+                  controller: columnController,
+                  onChanged: (value) {
+                    // context.read<BpsCalc>().columnUpdate(double.parse(columnController.text));
+                    refreshUI();
+                  },
                 )),
                 Expanded(
                     child: TextField(
-                  decoration: InputDecoration(labelText: "Row"),
-                  controller: _rowController,
+                  decoration: const InputDecoration(labelText: "Row"),
+                  controller: rowController,
+                  onChanged: (value) {
+                    refreshUI();
+
+                    // context
+                    //     .read<BpsCalc>()
+                    //     .rowUpdate(double.parse(rowController.text));
+                  },
                 )),
                 Expanded(
                     child: TextField(
-                  decoration: InputDecoration(labelText: "FPS"),
-                  controller: _fpsController,
+                  decoration: const InputDecoration(labelText: "FPS"),
+                  controller: fpsController,
+                  onChanged: (value) {
+                    refreshUI();
+                  },
                 )),
               ],
             ),
@@ -120,19 +106,25 @@ class _TconInputScreenState extends State<TconInputScreen> {
               children: [
                 Expanded(
                     child: TextField(
-                  decoration: InputDecoration(labelText: "Data Width"),
-                  controller: _dataWidthController,
+                  decoration: const InputDecoration(labelText: "Data Width"),
+                  controller: dataWidthController,
+                  onChanged: (value) {
+                    refreshUI();
+                  },
                 )),
                 Expanded(
                     child: TextField(
-                  decoration: InputDecoration(labelText: "Colors"),
-                  controller: _colorController,
+                  decoration: const InputDecoration(labelText: "Colors"),
+                  controller: colorController,
+                  onChanged: (value) {
+                    refreshUI();
+                  },
                 )),
                 Expanded(
                   child: Text(
-                      '${NumberFormat('##.###').format(bps_calc_result_gibps)} Gibps',
+                      '${NumberFormat('##.###').format(context.watch<BpsCalc>().bps_calc_result_gibps)} Gibps',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 17,
                       )),
                 ),
@@ -141,89 +133,72 @@ class _TconInputScreenState extends State<TconInputScreen> {
             const SizedBox(
               height: 10.0,
             ),
-            Row(
-              children: [
-                Expanded(
-                    child: TextField(
-                  decoration: InputDecoration(labelText: "DDR speed"),
-                  controller: _ddrSpeedController,
-                )),
-                Expanded(
-                    child: TextField(
-                  decoration: InputDecoration(labelText: "Width by"),
-                  controller: _ddrWidthController,
-                )),
-                Expanded(
-                  child: Text(
-                      '${NumberFormat('##.###').format(bps_calc_ddr)} Gibps',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 17,
-                      )),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            const SizedBox(
-              height: 50.0,
-            ),
-            Row(
-              children: [
-                SfSlider(
-                  value: _horizontalTimeSliderValue,
-                  min: 0,
-                  max: 20,
-                  showTicks: true,
-                  showLabels: true,
-                  showDividers: true,
-                  interval: 10,
-                  stepSize: 1,
-                  enableTooltip: true,
-                  shouldAlwaysShowTooltip: true,
-                  onChanged: (dynamic value) {
-                    setState(() {
-                      _horizontalTimeSliderValue = value;
-                      _bpsCalcResult();
-                    });
-                  },
-                ),
-                Text(
-                  '${NumberFormat('##.###').format(horizontal_time)} us',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 50.0,
-            ),
-            Row(
-              children: [
-                SfSlider(
-                  value: _storage_video_compression_ration,
-                  min: 0,
-                  max: 100,
-                  showTicks: true,
-                  showLabels: true,
-                  showDividers: true,
-                  interval: 25,
-                  stepSize: 1,
-                  enableTooltip: true,
-                  shouldAlwaysShowTooltip: true,
-                  onChanged: (dynamic value) {
-                    setState(() {
-                      _storage_video_compression_ration = value;
-                      _bpsCalcResult();
-                    });
-                  },
-                ),
-                Text(
-                  '${NumberFormat('##.###').format(storage_video_result_mbits)} Mbits',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //         child: TextField(
+            //       decoration: const InputDecoration(labelText: "DDR speed"),
+            //       controller: _ddrSpeedController,
+            //       onChanged: (value) {
+            //         bpsCalcResult();
+            //       },
+            //     )),
+            //     Expanded(
+            //         child: TextField(
+            //       decoration: const InputDecoration(labelText: "Width by"),
+            //       controller: _ddrWidthController,
+            //       onChanged: (value) {
+            //         bpsCalcResult();
+            //       },
+            //     )),
+            //     Expanded(
+            //       child: Text(
+            //           '${NumberFormat('##.###').format(bps_calc_ddr)} Gibps',
+            //           textAlign: TextAlign.center,
+            //           style: const TextStyle(
+            //             fontSize: 17,
+            //           )),
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(
+            //   height: 10.0,
+            // ),
+            // const SizedBox(
+            //   height: 50.0,
+            // ),
+            // Row(
+            //   children: [
+            //     SfSlider(
+            //       value: _horizontalTimeSliderValue,
+            //       min: 0,
+            //       max: 20,
+            //       showTicks: true,
+            //       showLabels: true,
+            //       showDividers: true,
+            //       interval: 10,
+            //       stepSize: 1,
+            //       enableTooltip: true,
+            //       shouldAlwaysShowTooltip: true,
+            //       onChanged: (value) {
+            //         setState(() {
+            //           _horizontalTimeSliderValue = value;
+            //           bpsCalcResult();
+            //         });
+            //       },
+            //     ),
+            //     Text(
+            //       '${NumberFormat('##.###').format(horizontal_time)} us',
+            //       style: const TextStyle(fontSize: 20),
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(
+            //   height: 50.0,
+            // ),
+            // const SizedBox(
+            //   height: 10.0,
+            // ),
           ],
         ),
       ),
