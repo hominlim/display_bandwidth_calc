@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:display_bandwidth_calc/calculators/bps_calculator.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 class TconInputScreen extends StatefulWidget {
   const TconInputScreen({Key? key}) : super(key: key);
@@ -23,16 +24,19 @@ class _TconInputScreenState extends State<TconInputScreen> {
   final ddrSpeedController = TextEditingController(text: "1866");
   final ddrWidthController = TextEditingController(text: "16");
 
+  dynamic _horizontalTimeSliderValue = 10;
+
   @override
   void initState() {
     super.initState();
-
-    bps.columnUpdate(double.parse(columnController.text));
-    bps.rowUpdate(double.parse(rowController.text));
-    bps.fpsUpdate(double.parse(fpsController.text));
-    bps.dataWidthUpdata(double.parse(colorController.text));
-    bps.colorUpdate(double.parse(dataWidthController.text));
-    bps.bpsCalculate();
+    context.read<BpsCalc>().initDisplay(
+        double.parse(columnController.text),
+        double.parse(rowController.text),
+        double.parse(fpsController.text),
+        double.parse(dataWidthController.text),
+        double.parse(colorController.text),
+        double.parse(ddrSpeedController.text),
+        double.parse(ddrWidthController.text));
   }
 
   void refreshUI() {
@@ -43,6 +47,16 @@ class _TconInputScreenState extends State<TconInputScreen> {
         .read<BpsCalc>()
         .dataWidthUpdata(double.parse(dataWidthController.text));
     context.read<BpsCalc>().colorUpdate(double.parse(colorController.text));
+
+    context
+        .read<BpsCalc>()
+        .ddrSpeedUpdate(double.parse(ddrSpeedController.text));
+    context
+        .read<BpsCalc>()
+        .ddrWidthUpdate(double.parse(ddrWidthController.text));
+
+    context.read<BpsCalc>().horizontalMarginUpdate(_horizontalTimeSliderValue);
+
     context.read<BpsCalc>().bpsCalculate();
   }
 
@@ -73,7 +87,6 @@ class _TconInputScreenState extends State<TconInputScreen> {
                   decoration: const InputDecoration(labelText: "Column"),
                   controller: columnController,
                   onChanged: (value) {
-                    // context.read<BpsCalc>().columnUpdate(double.parse(columnController.text));
                     refreshUI();
                   },
                 )),
@@ -133,72 +146,72 @@ class _TconInputScreenState extends State<TconInputScreen> {
             const SizedBox(
               height: 10.0,
             ),
-            // Row(
-            //   children: [
-            //     Expanded(
-            //         child: TextField(
-            //       decoration: const InputDecoration(labelText: "DDR speed"),
-            //       controller: _ddrSpeedController,
-            //       onChanged: (value) {
-            //         bpsCalcResult();
-            //       },
-            //     )),
-            //     Expanded(
-            //         child: TextField(
-            //       decoration: const InputDecoration(labelText: "Width by"),
-            //       controller: _ddrWidthController,
-            //       onChanged: (value) {
-            //         bpsCalcResult();
-            //       },
-            //     )),
-            //     Expanded(
-            //       child: Text(
-            //           '${NumberFormat('##.###').format(bps_calc_ddr)} Gibps',
-            //           textAlign: TextAlign.center,
-            //           style: const TextStyle(
-            //             fontSize: 17,
-            //           )),
-            //     ),
-            //   ],
-            // ),
-            // const SizedBox(
-            //   height: 10.0,
-            // ),
-            // const SizedBox(
-            //   height: 50.0,
-            // ),
-            // Row(
-            //   children: [
-            //     SfSlider(
-            //       value: _horizontalTimeSliderValue,
-            //       min: 0,
-            //       max: 20,
-            //       showTicks: true,
-            //       showLabels: true,
-            //       showDividers: true,
-            //       interval: 10,
-            //       stepSize: 1,
-            //       enableTooltip: true,
-            //       shouldAlwaysShowTooltip: true,
-            //       onChanged: (value) {
-            //         setState(() {
-            //           _horizontalTimeSliderValue = value;
-            //           bpsCalcResult();
-            //         });
-            //       },
-            //     ),
-            //     Text(
-            //       '${NumberFormat('##.###').format(horizontal_time)} us',
-            //       style: const TextStyle(fontSize: 20),
-            //     ),
-            //   ],
-            // ),
-            // const SizedBox(
-            //   height: 50.0,
-            // ),
-            // const SizedBox(
-            //   height: 10.0,
-            // ),
+            Row(
+              children: [
+                Expanded(
+                    child: TextField(
+                  decoration: const InputDecoration(labelText: "DDR speed"),
+                  controller: ddrSpeedController,
+                  onChanged: (value) {
+                    refreshUI();
+                  },
+                )),
+                Expanded(
+                    child: TextField(
+                  decoration: const InputDecoration(labelText: "Width by"),
+                  controller: ddrWidthController,
+                  onChanged: (value) {
+                    refreshUI();
+                  },
+                )),
+                Expanded(
+                  child: Text(
+                      '${NumberFormat('##.###').format(context.watch<BpsCalc>().bps_calc_ddr)} Gibps',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 17,
+                      )),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10.0,
+            ),
+            const SizedBox(
+              height: 50.0,
+            ),
+            Row(
+              children: [
+                SfSlider(
+                  value: _horizontalTimeSliderValue,
+                  min: 0,
+                  max: 20,
+                  showTicks: true,
+                  showLabels: true,
+                  showDividers: true,
+                  interval: 10,
+                  stepSize: 1,
+                  enableTooltip: true,
+                  shouldAlwaysShowTooltip: true,
+                  onChanged: (value) {
+                    // setState(() {
+                    _horizontalTimeSliderValue = value;
+                    refreshUI();
+                    // });
+                  },
+                ),
+                Text(
+                  '${NumberFormat('##.###').format(context.watch<BpsCalc>().horizontal_time)} us',
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 50.0,
+            ),
+            const SizedBox(
+              height: 10.0,
+            ),
           ],
         ),
       ),

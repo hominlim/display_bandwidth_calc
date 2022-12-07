@@ -25,18 +25,20 @@ class BpsCalc with ChangeNotifier {
   double _bps_calc_result_gibps = 0;
   double get bps_calc_result_gibps => _bps_calc_result_gibps;
 
-  double bps_calc_ddr = 0;
-  // double _resultDisplay = 0.00;
+  double _bps_calc_ddr = 0;
+  double get bps_calc_ddr => _bps_calc_ddr;
 
   double vertical_time = 0;
   double horizontal_time = 0;
+
   double _horizontalTimeSliderValue = 10;
+  double get horizontalTimeSliderValue => horizontalTimeSliderValue;
+
   double _storage_video_compression_ratio = 50;
 
   double _storage_video_result_mibits = 0;
   double get storage_video_result_mibits => _storage_video_result_mibits;
 
-// 텍스트필드 온체인지 되면 여기서 각각 변수를 겟 받아서 변수 수정하고 끝내는 걸로.
   void columnUpdate(number_of_column) {
     _number_of_column = number_of_column;
     notifyListeners();
@@ -62,9 +64,44 @@ class BpsCalc with ChangeNotifier {
     notifyListeners();
   }
 
+  void ddrSpeedUpdate(ddr_speed) {
+    _ddr_speed = ddr_speed;
+    notifyListeners();
+  }
+
+  void ddrWidthUpdate(ddr_width) {
+    _ddr_width = ddr_width;
+    notifyListeners();
+  }
+
+  void horizontalMarginUpdate(horizontalTimeSliderValue) {
+    _horizontalTimeSliderValue = horizontalTimeSliderValue;
+    notifyListeners();
+  }
+
   void frameMemoryUpdate(storage_video_compression_ratio) {
     _storage_video_compression_ratio = storage_video_compression_ratio;
     notifyListeners();
+  }
+
+  void initDisplay(number_of_column, number_of_row, frame_frequency,
+      number_of_color, data_width, ddr_speed, ddr_width) {
+    _bps_calc_result_gibps = number_of_column *
+        number_of_row *
+        frame_frequency *
+        number_of_color *
+        data_width /
+        1024 /
+        1024 /
+        1024;
+
+    _bps_calc_ddr = ddr_speed * ddr_width / 1024;
+
+    vertical_time = (1 / frame_frequency);
+    horizontal_time = (1 - _horizontalTimeSliderValue / 100) *
+        vertical_time /
+        number_of_row *
+        1000000;
   }
 
   void bpsCalculate() {
@@ -76,7 +113,8 @@ class BpsCalc with ChangeNotifier {
         1024 /
         1024 /
         1024;
-    bps_calc_ddr = ddr_speed * ddr_width / 1024;
+
+    _bps_calc_ddr = ddr_speed * ddr_width / 1024;
 
     vertical_time = (1 / frame_frequency);
     horizontal_time = (1 - _horizontalTimeSliderValue / 100) *
@@ -85,7 +123,6 @@ class BpsCalc with ChangeNotifier {
         1000000;
 
     notifyListeners();
-    print('in bpsCalculate() : $_bps_calc_result_gibps');
   }
 
   void frameMemStorageCalc() {
