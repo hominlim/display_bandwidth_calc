@@ -14,15 +14,27 @@ class MemoryScreen extends StatefulWidget {
   State<MemoryScreen> createState() => _MemoryScreenState();
 }
 
-class _MemoryScreenState extends State<MemoryScreen> {
+class _MemoryScreenState extends State<MemoryScreen>
+    with AutomaticKeepAliveClientMixin {
   BpsCalc bps = BpsCalc();
 
   bool _is_frame_buffer = false;
-  dynamic _storage_video_compression_ratio = 50;
+  double _storage_video_compression_ratio = 50;
+
+  @override
+  bool wantKeepAlive = true;
+
+  @override
+  void initState() {
+    context.read<BpsCalc>().initDisplay2(
+          _storage_video_compression_ratio,
+        );
+  }
 
   void refreshUI() {
     context.read<BpsCalc>().frameMemoryUpdate(_storage_video_compression_ratio);
     context.read<BpsCalc>().frameMemStorageCalc();
+    context.read<BpsCalc>().bpsCalculate();
   }
 
   @override
@@ -34,22 +46,31 @@ class _MemoryScreenState extends State<MemoryScreen> {
         body: Container(
             margin: EdgeInsets.only(left: 10, right: 30),
             child: Column(children: [
-              ToggleSwitch(
-                minWidth: 90.0,
-                initialLabelIndex: 1,
-                cornerRadius: 15.0,
-                activeFgColor: Colors.white,
-                inactiveBgColor: Colors.grey,
-                inactiveFgColor: Colors.white,
-                totalSwitches: 2,
-                labels: ['Use', 'Not Use'],
-                activeBgColors: [
-                  [Colors.blue],
-                  [Colors.blue],
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ToggleSwitch(
+                    minWidth: 100.0,
+                    minHeight: 30,
+                    initialLabelIndex: 0,
+                    cornerRadius: 15.0,
+                    activeFgColor: Colors.white,
+                    inactiveBgColor: Colors.grey,
+                    inactiveFgColor: Colors.white,
+                    totalSwitches: 2,
+                    labels: ['Use', 'Not Use'],
+                    activeBgColors: [
+                      [Colors.blue],
+                      [Colors.blue],
+                    ],
+                    onToggle: (index) {
+                      print('switched to: $index');
+                    },
+                  ),
                 ],
-                onToggle: (index) {
-                  print('switched to: $index');
-                },
               ),
               SizedBox(
                 height: 50,
@@ -80,6 +101,24 @@ class _MemoryScreenState extends State<MemoryScreen> {
                   ),
                 ],
               ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: [
+                  Text(
+                    '${NumberFormat('##.###').format(context.watch<BpsCalc>().bw_frame_buffer)} Gibps',
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                '${context.watch<BpsCalc>().ddr_frame_buffer.ceil()} ea of DDR Memory required \nwith ${(context.watch<BpsCalc>().margin_frame_buffer * 100).toStringAsFixed(2)}% of margin',
+                style: const TextStyle(fontSize: 20),
+              )
             ])));
   }
 }

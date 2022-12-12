@@ -32,12 +32,26 @@ class BpsCalc with ChangeNotifier {
   double horizontal_time = 0;
 
   double _horizontalTimeSliderValue = 10;
-  double get horizontalTimeSliderValue => horizontalTimeSliderValue;
+  double get horizontalTimeSliderValue => _horizontalTimeSliderValue;
 
   double _storage_video_compression_ratio = 50;
+  double get storage_video_compression_ratio =>
+      _storage_video_compression_ratio;
+
+  double _video_data_to_read_write = 0;
+  double get video_data_to_read_write => _video_data_to_read_write;
 
   double _storage_video_result_mibits = 0;
   double get storage_video_result_mibits => _storage_video_result_mibits;
+
+  double _bw_frame_buffer = 0;
+  double get bw_frame_buffer => _bw_frame_buffer;
+
+  double _ddr_frame_buffer = 0;
+  double get ddr_frame_buffer => _ddr_frame_buffer;
+
+  double _margin_frame_buffer = 0;
+  double get margin_frame_buffer => _margin_frame_buffer;
 
   void columnUpdate(number_of_column) {
     _number_of_column = number_of_column;
@@ -81,11 +95,22 @@ class BpsCalc with ChangeNotifier {
 
   void frameMemoryUpdate(storage_video_compression_ratio) {
     _storage_video_compression_ratio = storage_video_compression_ratio;
+    _video_data_to_read_write = video_data_to_read_write;
     notifyListeners();
   }
 
   void initDisplay(number_of_column, number_of_row, frame_frequency,
       number_of_color, data_width, ddr_speed, ddr_width) {
+    _number_of_column = number_of_column;
+    _number_of_row = number_of_row;
+    _frame_frequency = frame_frequency;
+    _number_of_color = number_of_color;
+    _data_width = data_width;
+    _number_of_color = number_of_color;
+    _data_width = data_width;
+    _ddr_speed = ddr_speed;
+    _ddr_width = ddr_width;
+
     _bps_calc_result_gibps = number_of_column *
         number_of_row *
         frame_frequency *
@@ -102,6 +127,25 @@ class BpsCalc with ChangeNotifier {
         vertical_time /
         number_of_row *
         1000000;
+  }
+
+  void initDisplay2(storage_video_compression_ratio) {
+    _storage_video_compression_ratio = storage_video_compression_ratio;
+    _video_data_to_read_write = (1 - _storage_video_compression_ratio / 100) *
+        number_of_column *
+        // number_of_row *
+        number_of_color *
+        data_width *
+        2;
+
+    _storage_video_result_mibits =
+        _video_data_to_read_write * number_of_row / 1024 / 1024;
+
+    _bw_frame_buffer = _video_data_to_read_write / horizontal_time / 1024;
+
+    _ddr_frame_buffer = (_bw_frame_buffer / _bps_calc_ddr);
+    _margin_frame_buffer =
+        1 - _bw_frame_buffer / (_bps_calc_ddr * _ddr_frame_buffer.ceil());
   }
 
   void bpsCalculate() {
@@ -126,16 +170,7 @@ class BpsCalc with ChangeNotifier {
   }
 
   void frameMemStorageCalc() {
-    _storage_video_result_mibits =
-        (1 - _storage_video_compression_ratio / 100) *
-            number_of_column *
-            number_of_row *
-            number_of_color *
-            data_width /
-            1024 /
-            1024;
-
+    initDisplay2(storage_video_compression_ratio);
     notifyListeners();
-    // print('$_storage_video_compression_ratio, $_storage_video_result_mibits');
   }
 }

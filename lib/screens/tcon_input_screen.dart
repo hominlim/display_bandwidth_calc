@@ -13,9 +13,8 @@ class TconInputScreen extends StatefulWidget {
   State<TconInputScreen> createState() => _TconInputScreenState();
 }
 
-class _TconInputScreenState extends State<TconInputScreen> {
-  BpsCalc bps = BpsCalc();
-
+class _TconInputScreenState extends State<TconInputScreen>
+    with AutomaticKeepAliveClientMixin {
   final columnController = TextEditingController(text: "3840");
   final rowController = TextEditingController(text: "2160");
   final fpsController = TextEditingController(text: "120");
@@ -24,7 +23,10 @@ class _TconInputScreenState extends State<TconInputScreen> {
   final ddrSpeedController = TextEditingController(text: "1866");
   final ddrWidthController = TextEditingController(text: "16");
 
-  dynamic _horizontalTimeSliderValue = 10;
+  double _horizontalTimeSliderValue = 10;
+
+  @override
+  bool wantKeepAlive = true;
 
   @override
   void initState() {
@@ -58,6 +60,7 @@ class _TconInputScreenState extends State<TconInputScreen> {
     context.read<BpsCalc>().horizontalMarginUpdate(_horizontalTimeSliderValue);
 
     context.read<BpsCalc>().bpsCalculate();
+    context.read<BpsCalc>().frameMemStorageCalc();
   }
 
   @override
@@ -96,10 +99,6 @@ class _TconInputScreenState extends State<TconInputScreen> {
                   controller: rowController,
                   onChanged: (value) {
                     refreshUI();
-
-                    // context
-                    //     .read<BpsCalc>()
-                    //     .rowUpdate(double.parse(rowController.text));
                   },
                 )),
                 Expanded(
@@ -194,10 +193,10 @@ class _TconInputScreenState extends State<TconInputScreen> {
                   enableTooltip: true,
                   shouldAlwaysShowTooltip: true,
                   onChanged: (value) {
-                    // setState(() {
-                    _horizontalTimeSliderValue = value;
-                    refreshUI();
-                    // });
+                    setState(() {
+                      _horizontalTimeSliderValue = value;
+                      refreshUI();
+                    });
                   },
                 ),
                 Text(
