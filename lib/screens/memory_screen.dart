@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 import 'package:display_bandwidth_calc/calculators/bps_calculator.dart';
 import 'package:display_bandwidth_calc/main.dart';
 import 'package:provider/provider.dart';
@@ -19,21 +18,45 @@ class _MemoryScreenState extends State<MemoryScreen>
   BpsCalc bps = BpsCalc();
 
   bool _is_frame_buffer = false;
-  double _storage_video_compression_ratio = 50;
+  double _vth_data_compression_ratio = 50;
+  double _mobility_data_compression_ratio = 50;
+  double _oled_data_compression_ratio = 50;
+
+  final _vthController = TextEditingController(text: "10");
+  final _mobilityController = TextEditingController(text: "6");
+  final _oledController = TextEditingController(text: "8");
 
   @override
   bool wantKeepAlive = true;
 
   @override
   void initState() {
-    context.read<BpsCalc>().initDisplay2(
-          _storage_video_compression_ratio,
-        );
+    super.initState();
+    context.read<BpsCalc>().initDisplay3(
+        _vth_data_compression_ratio,
+        double.parse(_vthController.text),
+        _mobility_data_compression_ratio,
+        double.parse(_mobilityController.text),
+        _oled_data_compression_ratio,
+        double.parse(_oledController.text));
   }
 
   void refreshUI() {
-    context.read<BpsCalc>().frameMemoryUpdate(_storage_video_compression_ratio);
+    context.read<BpsCalc>().vthDataUpdate(
+        _vth_data_compression_ratio, double.parse(_vthController.text));
+    context.read<BpsCalc>().mobilityDataUpdate(_mobility_data_compression_ratio,
+        double.parse(_mobilityController.text));
+    context.read<BpsCalc>().oledDataUpdate(
+        _oled_data_compression_ratio, double.parse(_oledController.text));
+
     context.read<BpsCalc>().frameMemStorageCalc();
+    context.read<BpsCalc>().initDisplay3(
+        _vth_data_compression_ratio,
+        double.parse(_vthController.text),
+        _mobility_data_compression_ratio,
+        double.parse(_mobilityController.text),
+        _oled_data_compression_ratio,
+        double.parse(_oledController.text));
     context.read<BpsCalc>().bpsCalculate();
   }
 
@@ -41,44 +64,18 @@ class _MemoryScreenState extends State<MemoryScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Bandwidth Calculator'),
+          title: const Text('Display Calculator'),
         ),
         body: Container(
             margin: EdgeInsets.only(left: 10, right: 30),
             child: Column(children: [
               SizedBox(
-                height: 20,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ToggleSwitch(
-                    minWidth: 100.0,
-                    minHeight: 30,
-                    initialLabelIndex: 0,
-                    cornerRadius: 15.0,
-                    activeFgColor: Colors.white,
-                    inactiveBgColor: Colors.grey,
-                    inactiveFgColor: Colors.white,
-                    totalSwitches: 2,
-                    labels: ['Use', 'Not Use'],
-                    activeBgColors: [
-                      [Colors.blue],
-                      [Colors.blue],
-                    ],
-                    onToggle: (index) {
-                      print('switched to: $index');
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 50,
+                height: 60,
               ),
               Row(
                 children: [
                   SfSlider(
-                    value: _storage_video_compression_ratio,
+                    value: _vth_data_compression_ratio,
                     min: 0,
                     max: 100,
                     showTicks: true,
@@ -90,35 +87,118 @@ class _MemoryScreenState extends State<MemoryScreen>
                     shouldAlwaysShowTooltip: true,
                     onChanged: (value) {
                       setState(() {
-                        _storage_video_compression_ratio = value;
+                        _vth_data_compression_ratio = value;
                         refreshUI();
                       });
                     },
                   ),
-                  Text(
-                    '${NumberFormat('##.###').format(context.watch<BpsCalc>().storage_video_result_mibits)} Mbits',
-                    style: const TextStyle(fontSize: 20),
+                  SizedBox(
+                    width: 100.0,
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        labelText: "Vth",
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.all(8),
+                      ),
+                      controller: _vthController,
+                      onChanged: (value) {
+                        refreshUI();
+                      },
+                    ),
                   ),
+                  Text('  bits'),
                 ],
               ),
               SizedBox(
-                height: 20,
+                height: 60,
               ),
               Row(
                 children: [
-                  Text(
-                    '${NumberFormat('##.###').format(context.watch<BpsCalc>().bw_frame_buffer)} Gibps',
-                    style: const TextStyle(fontSize: 20),
+                  SfSlider(
+                    value: _mobility_data_compression_ratio,
+                    min: 0,
+                    max: 100,
+                    showTicks: true,
+                    showLabels: true,
+                    showDividers: true,
+                    interval: 25,
+                    stepSize: 1,
+                    enableTooltip: true,
+                    shouldAlwaysShowTooltip: true,
+                    onChanged: (value) {
+                      setState(() {
+                        _mobility_data_compression_ratio = value;
+                        refreshUI();
+                      });
+                    },
                   ),
+                  SizedBox(
+                    width: 100.0,
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        labelText: "mobility",
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.all(8),
+                      ),
+                      controller: _mobilityController,
+                      onChanged: (value) {
+                        refreshUI();
+                      },
+                    ),
+                  ),
+                  Text('  bits'),
                 ],
               ),
               SizedBox(
-                height: 20,
+                height: 60,
+              ),
+              Row(
+                children: [
+                  SfSlider(
+                    value: _oled_data_compression_ratio,
+                    min: 0,
+                    max: 100,
+                    showTicks: true,
+                    showLabels: true,
+                    showDividers: true,
+                    interval: 25,
+                    stepSize: 1,
+                    enableTooltip: true,
+                    shouldAlwaysShowTooltip: true,
+                    onChanged: (value) {
+                      setState(() {
+                        _oled_data_compression_ratio = value;
+                        refreshUI();
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    width: 100.0,
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        labelText: "OLED",
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.all(8),
+                      ),
+                      controller: _oledController,
+                      onChanged: (value) {
+                        refreshUI();
+                      },
+                    ),
+                  ),
+                  Text('  bits'),
+                ],
+              ),
+              SizedBox(
+                height: 30,
               ),
               Text(
-                '${context.watch<BpsCalc>().ddr_frame_buffer.ceil()} ea of DDR Memory required \nwith ${(context.watch<BpsCalc>().margin_frame_buffer * 100).toStringAsFixed(2)}% of margin',
+                '${context.watch<BpsCalc>().ddr_comp_data.ceil()} ea of DDR Memory required \nwith ${(context.watch<BpsCalc>().margin_comp_data * 100).toStringAsFixed(2)}% of margin',
                 style: const TextStyle(fontSize: 20),
-              )
+              ),
             ])));
   }
 }

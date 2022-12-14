@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     return ChangeNotifierProvider<BpsCalc>(
         create: (_) => BpsCalc(),
         child: MaterialApp(
-          title: 'Flutter Demo',
+          title: 'Display Calculator',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),

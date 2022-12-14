@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:display_bandwidth_calc/calculators/bps_calculator.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class TconInputScreen extends StatefulWidget {
   const TconInputScreen({Key? key}) : super(key: key);
@@ -23,7 +24,8 @@ class _TconInputScreenState extends State<TconInputScreen>
   final ddrSpeedController = TextEditingController(text: "1866");
   final ddrWidthController = TextEditingController(text: "16");
 
-  double _horizontalTimeSliderValue = 10;
+  double horizontalTimeSliderValue = 10;
+  double _storage_video_compression_ratio = 50;
 
   @override
   bool wantKeepAlive = true;
@@ -39,6 +41,9 @@ class _TconInputScreenState extends State<TconInputScreen>
         double.parse(colorController.text),
         double.parse(ddrSpeedController.text),
         double.parse(ddrWidthController.text));
+    context.read<BpsCalc>().initDisplay2(
+          _storage_video_compression_ratio,
+        );
   }
 
   void refreshUI() {
@@ -57,29 +62,23 @@ class _TconInputScreenState extends State<TconInputScreen>
         .read<BpsCalc>()
         .ddrWidthUpdate(double.parse(ddrWidthController.text));
 
-    context.read<BpsCalc>().horizontalMarginUpdate(_horizontalTimeSliderValue);
+    context.read<BpsCalc>().horizontalMarginUpdate(horizontalTimeSliderValue);
 
     context.read<BpsCalc>().bpsCalculate();
     context.read<BpsCalc>().frameMemStorageCalc();
+    context.read<BpsCalc>().frameMemoryUpdate(_storage_video_compression_ratio);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bandwidth Calculator'),
+        title: const Text('Display Calculator'),
       ),
       body: Container(
         margin: const EdgeInsets.only(left: 10, right: 30),
         child: Column(
           children: [
-            const SizedBox(
-              height: 16.0,
-            ),
-            const Text(
-              'T-Con Input',
-              style: TextStyle(fontSize: 20),
-            ),
             const SizedBox(
               height: 16.0,
             ),
@@ -133,12 +132,20 @@ class _TconInputScreenState extends State<TconInputScreen>
                   },
                 )),
                 Expanded(
-                  child: Text(
-                      '${NumberFormat('##.###').format(context.watch<BpsCalc>().bps_calc_result_gibps)} Gibps',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 17,
-                      )),
+                  child: Column(
+                    children: [
+                      Text('Video B/W',
+                          style: const TextStyle(
+                            fontSize: 15,
+                          )),
+                      Text(
+                          '${NumberFormat('##.##').format(context.watch<BpsCalc>().bps_calc_result_gibps)} Gibps',
+                          style: const TextStyle(
+                            fontSize: 17,
+                            color: Colors.blue,
+                          )),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -164,52 +171,167 @@ class _TconInputScreenState extends State<TconInputScreen>
                   },
                 )),
                 Expanded(
-                  child: Text(
-                      '${NumberFormat('##.###').format(context.watch<BpsCalc>().bps_calc_ddr)} Gibps',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 17,
-                      )),
+                  child: Column(
+                    children: [
+                      Text('DDR B/W',
+                          style: const TextStyle(
+                            fontSize: 15,
+                          )),
+                      Text(
+                          '${NumberFormat('##.##').format(context.watch<BpsCalc>().bps_calc_ddr)} Gibps',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 17, color: Colors.blue)),
+                    ],
+                  ),
                 ),
               ],
             ),
             const SizedBox(
-              height: 10.0,
-            ),
-            const SizedBox(
-              height: 50.0,
+              height: 20.0,
             ),
             Row(
               children: [
-                SfSlider(
-                  value: _horizontalTimeSliderValue,
-                  min: 0,
-                  max: 20,
-                  showTicks: true,
-                  showLabels: true,
-                  showDividers: true,
-                  interval: 10,
-                  stepSize: 1,
-                  enableTooltip: true,
-                  shouldAlwaysShowTooltip: true,
-                  onChanged: (value) {
-                    setState(() {
-                      _horizontalTimeSliderValue = value;
-                      refreshUI();
-                    });
-                  },
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('margin\n(%)',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 17,
+                        )),
+                    SfSlider(
+                      value: horizontalTimeSliderValue,
+                      min: 0,
+                      max: 20,
+                      showTicks: true,
+                      showLabels: true,
+                      showDividers: true,
+                      interval: 10,
+                      stepSize: 1,
+                      enableTooltip: true,
+                      shouldAlwaysShowTooltip: true,
+                      onChanged: (value) {
+                        setState(() {
+                          horizontalTimeSliderValue = value;
+                          refreshUI();
+                        });
+                      },
+                    ),
+                  ],
                 ),
                 Text(
-                  '${NumberFormat('##.###').format(context.watch<BpsCalc>().horizontal_time)} us',
+                  '1H time : ${NumberFormat('##.###').format(context.watch<BpsCalc>().horizontal_time)} us',
                   style: const TextStyle(fontSize: 20),
                 ),
               ],
             ),
             const SizedBox(
-              height: 50.0,
+              height: 30.0,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Video Frame Buffer',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ],
             ),
             const SizedBox(
               height: 10.0,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ToggleSwitch(
+                  minWidth: 100.0,
+                  minHeight: 30,
+                  initialLabelIndex: 0,
+                  cornerRadius: 15.0,
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.grey,
+                  inactiveFgColor: Colors.white,
+                  totalSwitches: 2,
+                  labels: ['Use', 'Not Use'],
+                  activeBgColors: [
+                    [Colors.blue],
+                    [Colors.blue],
+                  ],
+                  onToggle: (index) {
+                    print('switched to: $index');
+                  },
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('compression\n(%)',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 17,
+                        )),
+                    SfSlider(
+                      value: _storage_video_compression_ratio,
+                      min: 0,
+                      max: 100,
+                      showTicks: true,
+                      showLabels: true,
+                      showDividers: true,
+                      interval: 25,
+                      stepSize: 1,
+                      enableTooltip: true,
+                      shouldAlwaysShowTooltip: true,
+                      onChanged: (value) {
+                        setState(() {
+                          _storage_video_compression_ratio = value;
+                          refreshUI();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      'Storage',
+                      style: const TextStyle(fontSize: 15),
+                    ),
+                    Text(
+                      '${NumberFormat('##.##').format(context.watch<BpsCalc>().storage_video_result_mibits)} Mbits',
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            // Row(
+            //   children: [
+            //     Text(
+            //       '${NumberFormat('##.###').format(context.watch<BpsCalc>().bw_frame_buffer)} Gibps',
+            //       style: const TextStyle(fontSize: 20),
+            //     ),
+            //   ],
+            // ),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              '${context.watch<BpsCalc>().ddr_frame_buffer.ceil()} ea of DDR Memory required \nwith ${(context.watch<BpsCalc>().margin_frame_buffer * 100).toStringAsFixed(2)}% of margin',
+              style: const TextStyle(fontSize: 20),
+            ),
+            SizedBox(
+              height: 60,
             ),
           ],
         ),
