@@ -80,7 +80,17 @@ class _TconInputScreenState extends State<TconInputScreen>
         child: Column(
           children: [
             const SizedBox(
-              height: 16.0,
+              height: 15.0,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Input information',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ],
             ),
             Row(
               children: [
@@ -89,7 +99,9 @@ class _TconInputScreenState extends State<TconInputScreen>
                   decoration: const InputDecoration(labelText: "Column"),
                   controller: columnController,
                   onChanged: (value) {
-                    refreshUI();
+                    if (value == '') {
+                    } else
+                      refreshUI();
                   },
                 )),
                 Expanded(
@@ -97,7 +109,9 @@ class _TconInputScreenState extends State<TconInputScreen>
                   decoration: const InputDecoration(labelText: "Row"),
                   controller: rowController,
                   onChanged: (value) {
-                    refreshUI();
+                    if (value == '') {
+                    } else
+                      refreshUI();
                   },
                 )),
                 Expanded(
@@ -105,7 +119,9 @@ class _TconInputScreenState extends State<TconInputScreen>
                   decoration: const InputDecoration(labelText: "FPS"),
                   controller: fpsController,
                   onChanged: (value) {
-                    refreshUI();
+                    if (value == '') {
+                    } else
+                      refreshUI();
                   },
                 )),
               ],
@@ -120,7 +136,9 @@ class _TconInputScreenState extends State<TconInputScreen>
                   decoration: const InputDecoration(labelText: "Data Width"),
                   controller: dataWidthController,
                   onChanged: (value) {
-                    refreshUI();
+                    if (value == '') {
+                    } else
+                      refreshUI();
                   },
                 )),
                 Expanded(
@@ -128,7 +146,10 @@ class _TconInputScreenState extends State<TconInputScreen>
                   decoration: const InputDecoration(labelText: "Colors"),
                   controller: colorController,
                   onChanged: (value) {
-                    refreshUI();
+                    if (value == '') {
+                    } else {
+                      refreshUI();
+                    }
                   },
                 )),
                 Expanded(
@@ -159,7 +180,10 @@ class _TconInputScreenState extends State<TconInputScreen>
                   decoration: const InputDecoration(labelText: "DDR speed"),
                   controller: ddrSpeedController,
                   onChanged: (value) {
-                    refreshUI();
+                    if (value == '') {
+                    } else {
+                      refreshUI();
+                    }
                   },
                 )),
                 Expanded(
@@ -167,7 +191,10 @@ class _TconInputScreenState extends State<TconInputScreen>
                   decoration: const InputDecoration(labelText: "Width by"),
                   controller: ddrWidthController,
                   onChanged: (value) {
-                    refreshUI();
+                    if (value == '') {
+                    } else {
+                      refreshUI();
+                    }
                   },
                 )),
                 Expanded(
@@ -195,6 +222,14 @@ class _TconInputScreenState extends State<TconInputScreen>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text('Horizontal time',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Text('margin\n(%)',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
@@ -239,32 +274,32 @@ class _TconInputScreenState extends State<TconInputScreen>
                     )),
               ],
             ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ToggleSwitch(
-                  minWidth: 100.0,
-                  minHeight: 30,
-                  initialLabelIndex: 0,
-                  cornerRadius: 15.0,
-                  activeFgColor: Colors.white,
-                  inactiveBgColor: Colors.grey,
-                  inactiveFgColor: Colors.white,
-                  totalSwitches: 2,
-                  labels: ['Use', 'Not Use'],
-                  activeBgColors: [
-                    [Colors.blue],
-                    [Colors.blue],
-                  ],
-                  onToggle: (index) {
-                    print('switched to: $index');
-                  },
-                ),
-              ],
-            ),
+            // const SizedBox(
+            //   height: 10.0,
+            // ),
+            // Row(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     ToggleSwitch(
+            //       minWidth: 100.0,
+            //       minHeight: 30,
+            //       initialLabelIndex: 0,
+            //       cornerRadius: 15.0,
+            //       activeFgColor: Colors.white,
+            //       inactiveBgColor: Colors.grey,
+            //       inactiveFgColor: Colors.white,
+            //       totalSwitches: 2,
+            //       labels: ['Use', 'Not Use'],
+            //       activeBgColors: [
+            //         [Colors.blue],
+            //         [Colors.blue],
+            //       ],
+            //       onToggle: (index) {
+            //         print('switched to: $index');
+            //       },
+            //     ),
+            //   ],
+            // ),
             SizedBox(
               height: 10,
             ),

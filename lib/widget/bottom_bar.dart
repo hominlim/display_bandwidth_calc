@@ -20,7 +20,7 @@ class Bottom extends StatelessWidget {
                 size: 18,
               ),
               child: Text(
-                'System Link',
+                'Default Setting',
                 style: TextStyle(fontSize: 9),
               ),
             ),
@@ -30,27 +30,7 @@ class Bottom extends StatelessWidget {
                 size: 18,
               ),
               child: Text(
-                'Memory',
-                style: TextStyle(fontSize: 9),
-              ),
-            ),
-            Tab(
-              icon: Icon(
-                Icons.desktop_windows,
-                size: 18,
-              ),
-              child: Text(
-                'Panel Link',
-                style: TextStyle(fontSize: 9),
-              ),
-            ),
-            Tab(
-              icon: Icon(
-                Icons.home,
-                size: 18,
-              ),
-              child: Text(
-                'Result',
+                'Additional Setting',
                 style: TextStyle(fontSize: 9),
               ),
             ),

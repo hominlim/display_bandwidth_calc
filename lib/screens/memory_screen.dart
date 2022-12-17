@@ -44,6 +44,7 @@ class _MemoryScreenState extends State<MemoryScreen>
   void refreshUI() {
     context.read<BpsCalc>().vthDataUpdate(
         _vth_data_compression_ratio, double.parse(_vthController.text));
+
     context.read<BpsCalc>().mobilityDataUpdate(_mobility_data_compression_ratio,
         double.parse(_mobilityController.text));
     context.read<BpsCalc>().oledDataUpdate(
@@ -69,6 +70,19 @@ class _MemoryScreenState extends State<MemoryScreen>
         body: Container(
             margin: EdgeInsets.only(left: 10, right: 30),
             child: Column(children: [
+              SizedBox(
+                height: 15,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Compensation Data',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ],
+              ),
               SizedBox(
                 height: 60,
               ),
@@ -103,7 +117,9 @@ class _MemoryScreenState extends State<MemoryScreen>
                       ),
                       controller: _vthController,
                       onChanged: (value) {
-                        refreshUI();
+                        if (value == '') {
+                        } else
+                          refreshUI();
                       },
                     ),
                   ),
@@ -144,7 +160,9 @@ class _MemoryScreenState extends State<MemoryScreen>
                       ),
                       controller: _mobilityController,
                       onChanged: (value) {
-                        refreshUI();
+                        if (value == '') {
+                        } else
+                          refreshUI();
                       },
                     ),
                   ),
@@ -185,7 +203,9 @@ class _MemoryScreenState extends State<MemoryScreen>
                       ),
                       controller: _oledController,
                       onChanged: (value) {
-                        refreshUI();
+                        if (value == '') {
+                        } else
+                          refreshUI();
                       },
                     ),
                   ),

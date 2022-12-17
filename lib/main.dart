@@ -36,15 +36,13 @@ class _MyAppState extends State<MyApp> {
             primarySwatch: Colors.blue,
           ),
           home: DefaultTabController(
-            length: 4,
+            length: 2,
             child: Scaffold(
               body: TabBarView(
                 // physics: NeverScrollableScrollPhysics(),
                 children: [
                   TconInputScreen(),
                   MemoryScreen(),
-                  Container(),
-                  Container(),
                 ],
               ),
               bottomNavigationBar: Bottom(),
