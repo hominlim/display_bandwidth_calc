@@ -215,7 +215,7 @@ class _TconInputScreenState extends State<TconInputScreen>
               ],
             ),
             const SizedBox(
-              height: 20.0,
+              height: 30.0,
             ),
             Row(
               children: [
@@ -228,7 +228,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                           fontWeight: FontWeight.bold,
                         )),
                     SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     Text('margin\n(%)',
                         textAlign: TextAlign.center,
@@ -301,7 +301,7 @@ class _TconInputScreenState extends State<TconInputScreen>
             //   ],
             // ),
             SizedBox(
-              height: 10,
+              height: 20,
             ),
             Row(
               children: [
