@@ -274,6 +274,17 @@ class _TconInputScreenState extends State<TconInputScreen>
                     )),
               ],
             ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('compression\nratio(%)',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 17,
+                    )),
+              ],
+            ),
+
             // const SizedBox(
             //   height: 10.0,
             // ),
@@ -303,16 +314,13 @@ class _TconInputScreenState extends State<TconInputScreen>
             SizedBox(
               height: 20,
             ),
+
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('compression\n(%)',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 17,
-                        )),
                     SfSlider(
                       value: _storage_video_compression_ratio,
                       min: 0,

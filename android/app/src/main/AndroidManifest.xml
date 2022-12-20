@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.display_bandwidth_calc">
    <application
-        android:label="display_bandwidth_calc"
+        android:label="MemCalc"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
