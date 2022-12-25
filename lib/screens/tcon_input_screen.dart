@@ -256,7 +256,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                   ],
                 ),
                 Text(
-                  '1H time : ${NumberFormat('##.###').format(context.watch<BpsCalc>().horizontal_time)} us',
+                  '${NumberFormat('##.###').format(context.watch<BpsCalc>().horizontal_time)} us',
                   style: const TextStyle(fontSize: 20),
                 ),
               ],
@@ -367,14 +367,11 @@ class _TconInputScreenState extends State<TconInputScreen>
             //   ],
             // ),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
             Text(
               '${context.watch<BpsCalc>().ddr_frame_buffer.ceil()} ea of DDR Memory required \nwith ${(context.watch<BpsCalc>().margin_frame_buffer * 100).toStringAsFixed(2)}% of margin',
               style: const TextStyle(fontSize: 20),
-            ),
-            SizedBox(
-              height: 60,
             ),
           ],
         ),
