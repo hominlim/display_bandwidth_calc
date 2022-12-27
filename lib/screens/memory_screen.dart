@@ -67,158 +67,166 @@ class _MemoryScreenState extends State<MemoryScreen>
         appBar: AppBar(
           title: const Text('Display Calculator'),
         ),
-        body: Container(
-            margin: EdgeInsets.only(left: 10, right: 30),
-            child: Column(children: [
-              SizedBox(
-                height: 15,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Compensation Data',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      )),
-                ],
-              ),
-              SizedBox(
-                height: 60,
-              ),
-              Row(
-                children: [
-                  SfSlider(
-                    value: _vth_data_compression_ratio,
-                    min: 0,
-                    max: 100,
-                    showTicks: true,
-                    showLabels: true,
-                    showDividers: true,
-                    interval: 25,
-                    stepSize: 1,
-                    enableTooltip: true,
-                    shouldAlwaysShowTooltip: true,
-                    onChanged: (value) {
-                      setState(() {
-                        _vth_data_compression_ratio = value;
-                        refreshUI();
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    width: 100.0,
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        labelText: "Vth",
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                        contentPadding: EdgeInsets.all(8),
-                      ),
-                      controller: _vthController,
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Container(
+              margin: EdgeInsets.only(left: 10, right: 30),
+              child: Column(children: [
+                SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Compensation Data',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ],
+                ),
+                SizedBox(
+                  height: 60,
+                ),
+                Row(
+                  children: [
+                    SfSlider(
+                      value: _vth_data_compression_ratio,
+                      min: 0,
+                      max: 100,
+                      showTicks: true,
+                      showLabels: true,
+                      showDividers: true,
+                      interval: 25,
+                      stepSize: 1,
+                      enableTooltip: true,
+                      shouldAlwaysShowTooltip: true,
                       onChanged: (value) {
-                        if (value == '') {
-                        } else
+                        setState(() {
+                          _vth_data_compression_ratio = value;
                           refreshUI();
+                        });
                       },
                     ),
-                  ),
-                  Text('  bits'),
-                ],
-              ),
-              SizedBox(
-                height: 60,
-              ),
-              Row(
-                children: [
-                  SfSlider(
-                    value: _mobility_data_compression_ratio,
-                    min: 0,
-                    max: 100,
-                    showTicks: true,
-                    showLabels: true,
-                    showDividers: true,
-                    interval: 25,
-                    stepSize: 1,
-                    enableTooltip: true,
-                    shouldAlwaysShowTooltip: true,
-                    onChanged: (value) {
-                      setState(() {
-                        _mobility_data_compression_ratio = value;
-                        refreshUI();
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    width: 100.0,
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        labelText: "mobility",
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                        contentPadding: EdgeInsets.all(8),
+                    SizedBox(
+                      width: 100.0,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: "Vth",
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                          contentPadding: EdgeInsets.all(8),
+                        ),
+                        controller: _vthController,
+                        onChanged: (value) {
+                          if (value == '') {
+                          } else
+                            refreshUI();
+                        },
                       ),
-                      controller: _mobilityController,
+                    ),
+                    Text('  bits'),
+                  ],
+                ),
+                SizedBox(
+                  height: 60,
+                ),
+                Row(
+                  children: [
+                    SfSlider(
+                      value: _mobility_data_compression_ratio,
+                      min: 0,
+                      max: 100,
+                      showTicks: true,
+                      showLabels: true,
+                      showDividers: true,
+                      interval: 25,
+                      stepSize: 1,
+                      enableTooltip: true,
+                      shouldAlwaysShowTooltip: true,
                       onChanged: (value) {
-                        if (value == '') {
-                        } else
+                        setState(() {
+                          _mobility_data_compression_ratio = value;
                           refreshUI();
+                        });
                       },
                     ),
-                  ),
-                  Text('  bits'),
-                ],
-              ),
-              SizedBox(
-                height: 60,
-              ),
-              Row(
-                children: [
-                  SfSlider(
-                    value: _oled_data_compression_ratio,
-                    min: 0,
-                    max: 100,
-                    showTicks: true,
-                    showLabels: true,
-                    showDividers: true,
-                    interval: 25,
-                    stepSize: 1,
-                    enableTooltip: true,
-                    shouldAlwaysShowTooltip: true,
-                    onChanged: (value) {
-                      setState(() {
-                        _oled_data_compression_ratio = value;
-                        refreshUI();
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    width: 100.0,
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        labelText: "OLED",
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                        contentPadding: EdgeInsets.all(8),
+                    SizedBox(
+                      width: 100.0,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: "mobility",
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                          contentPadding: EdgeInsets.all(8),
+                        ),
+                        controller: _mobilityController,
+                        onChanged: (value) {
+                          if (value == '') {
+                          } else
+                            refreshUI();
+                        },
                       ),
-                      controller: _oledController,
+                    ),
+                    Text('  bits'),
+                  ],
+                ),
+                SizedBox(
+                  height: 60,
+                ),
+                Row(
+                  children: [
+                    SfSlider(
+                      value: _oled_data_compression_ratio,
+                      min: 0,
+                      max: 100,
+                      showTicks: true,
+                      showLabels: true,
+                      showDividers: true,
+                      interval: 25,
+                      stepSize: 1,
+                      enableTooltip: true,
+                      shouldAlwaysShowTooltip: true,
                       onChanged: (value) {
-                        if (value == '') {
-                        } else
+                        setState(() {
+                          _oled_data_compression_ratio = value;
                           refreshUI();
+                        });
                       },
                     ),
-                  ),
-                  Text('  bits'),
-                ],
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Text(
-                '${context.watch<BpsCalc>().ddr_comp_data.ceil()} ea of DDR Memory required \nwith ${(context.watch<BpsCalc>().margin_comp_data * 100).toStringAsFixed(2)}% of margin',
-                style: const TextStyle(fontSize: 20),
-              ),
-            ])));
+                    SizedBox(
+                      width: 100.0,
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: "OLED",
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                          contentPadding: EdgeInsets.all(8),
+                        ),
+                        controller: _oledController,
+                        onChanged: (value) {
+                          if (value == '') {
+                          } else
+                            refreshUI();
+                        },
+                      ),
+                    ),
+                    Text('  bits'),
+                  ],
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  '${context.watch<BpsCalc>().ddr_comp_data.ceil()} ea of DDR Memory required \nwith ${(context.watch<BpsCalc>().margin_comp_data * 100).toStringAsFixed(2)}% of margin',
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ])),
+        ));
   }
 }
