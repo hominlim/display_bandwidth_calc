@@ -13,7 +13,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => BpsCalc()),
+        ChangeNotifierProvider(create: (_) => Calculation()),
       ],
       child: const MyApp(),
     ),
@@ -32,8 +32,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<BpsCalc>(
-        create: (_) => BpsCalc(),
+    return ChangeNotifierProvider<Calculation>(
+        create: (_) => Calculation(),
         child: MaterialApp(
           title: 'Display Calculator',
           theme: ThemeData(

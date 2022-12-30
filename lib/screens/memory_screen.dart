@@ -13,18 +13,17 @@ class MemoryScreen extends StatefulWidget {
   State<MemoryScreen> createState() => _MemoryScreenState();
 }
 
-class _MemoryScreenState extends State<MemoryScreen>
-    with AutomaticKeepAliveClientMixin {
-  BpsCalc bps = BpsCalc();
+class _MemoryScreenState extends State<MemoryScreen> with AutomaticKeepAliveClientMixin {
+  Calculation bps = Calculation();
 
   bool _is_frame_buffer = false;
   double _vth_data_compression_ratio = 50;
   double _mobility_data_compression_ratio = 50;
   double _oled_data_compression_ratio = 50;
 
-  final _vthController = TextEditingController(text: "10");
-  final _mobilityController = TextEditingController(text: "6");
-  final _oledController = TextEditingController(text: "8");
+  final vthController = TextEditingController(text: "10");
+  final mobilityController = TextEditingController(text: "6");
+  final oledController = TextEditingController(text: "8");
 
   @override
   bool wantKeepAlive = true;
@@ -32,34 +31,12 @@ class _MemoryScreenState extends State<MemoryScreen>
   @override
   void initState() {
     super.initState();
-    context.read<BpsCalc>().initDisplay3(
-        _vth_data_compression_ratio,
-        double.parse(_vthController.text),
-        _mobility_data_compression_ratio,
-        double.parse(_mobilityController.text),
-        _oled_data_compression_ratio,
-        double.parse(_oledController.text));
+    context
+        .read<Calculation>()
+        .initDisplay3(_vth_data_compression_ratio, vthController.text, _mobility_data_compression_ratio, mobilityController.text, _oled_data_compression_ratio, oledController.text);
   }
 
-  void refreshUI() {
-    context.read<BpsCalc>().vthDataUpdate(
-        _vth_data_compression_ratio, double.parse(_vthController.text));
-
-    context.read<BpsCalc>().mobilityDataUpdate(_mobility_data_compression_ratio,
-        double.parse(_mobilityController.text));
-    context.read<BpsCalc>().oledDataUpdate(
-        _oled_data_compression_ratio, double.parse(_oledController.text));
-
-    context.read<BpsCalc>().frameMemStorageCalc();
-    context.read<BpsCalc>().initDisplay3(
-        _vth_data_compression_ratio,
-        double.parse(_vthController.text),
-        _mobility_data_compression_ratio,
-        double.parse(_mobilityController.text),
-        _oled_data_compression_ratio,
-        double.parse(_oledController.text));
-    context.read<BpsCalc>().bpsCalculate();
-  }
+  void refreshUI() {}
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +83,7 @@ class _MemoryScreenState extends State<MemoryScreen>
                       onChanged: (value) {
                         setState(() {
                           _vth_data_compression_ratio = value;
-                          refreshUI();
+                          context.read<Calculation>().updateEach('vth_data_compression_ratio', value.toString());
                         });
                       },
                     ),
@@ -120,11 +97,12 @@ class _MemoryScreenState extends State<MemoryScreen>
                           isDense: true,
                           contentPadding: EdgeInsets.all(8),
                         ),
-                        controller: _vthController,
+                        controller: vthController,
                         onChanged: (value) {
                           if (value == '') {
-                          } else
-                            refreshUI();
+                          } else {
+                            context.read<Calculation>().updateEach('comp_vth_data_to_read', value);
+                          }
                         },
                       ),
                     ),
@@ -150,7 +128,7 @@ class _MemoryScreenState extends State<MemoryScreen>
                       onChanged: (value) {
                         setState(() {
                           _mobility_data_compression_ratio = value;
-                          refreshUI();
+                          context.read<Calculation>().updateEach('mobility_data_compression_ratio', value.toString());
                         });
                       },
                     ),
@@ -164,11 +142,11 @@ class _MemoryScreenState extends State<MemoryScreen>
                           isDense: true,
                           contentPadding: EdgeInsets.all(8),
                         ),
-                        controller: _mobilityController,
+                        controller: mobilityController,
                         onChanged: (value) {
                           if (value == '') {
                           } else
-                            refreshUI();
+                            context.read<Calculation>().updateEach('comp_mobility_data_to_read', value);
                         },
                       ),
                     ),
@@ -194,7 +172,7 @@ class _MemoryScreenState extends State<MemoryScreen>
                       onChanged: (value) {
                         setState(() {
                           _oled_data_compression_ratio = value;
-                          refreshUI();
+                          context.read<Calculation>().updateEach('oled_data_compression_ratio', value.toString());
                         });
                       },
                     ),
@@ -208,11 +186,11 @@ class _MemoryScreenState extends State<MemoryScreen>
                           isDense: true,
                           contentPadding: EdgeInsets.all(8),
                         ),
-                        controller: _oledController,
+                        controller: oledController,
                         onChanged: (value) {
                           if (value == '') {
                           } else
-                            refreshUI();
+                            context.read<Calculation>().updateEach('comp_oled_data_to_read', value);
                         },
                       ),
                     ),
@@ -223,7 +201,7 @@ class _MemoryScreenState extends State<MemoryScreen>
                   height: 30,
                 ),
                 Text(
-                  '${context.watch<BpsCalc>().ddr_comp_data.ceil()} ea of DDR Memory required \nwith ${(context.watch<BpsCalc>().margin_comp_data * 100).toStringAsFixed(2)}% of margin',
+                  '${context.watch<Calculation>().ddr_comp_data.ceil()} ea of DDR Memory required \nwith ${(context.watch<Calculation>().margin_comp_data * 100).toStringAsFixed(2)}% of margin',
                   style: const TextStyle(fontSize: 20),
                 ),
               ])),

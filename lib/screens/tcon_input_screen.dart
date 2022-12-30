@@ -1,11 +1,9 @@
-import 'dart:ffi';
-import 'package:display_bandwidth_calc/main.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:display_bandwidth_calc/calculators/bps_calculator.dart';
+import 'package:intl/number_symbols_data.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class TconInputScreen extends StatefulWidget {
   const TconInputScreen({Key? key}) : super(key: key);
@@ -14,8 +12,7 @@ class TconInputScreen extends StatefulWidget {
   State<TconInputScreen> createState() => _TconInputScreenState();
 }
 
-class _TconInputScreenState extends State<TconInputScreen>
-    with AutomaticKeepAliveClientMixin {
+class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAliveClientMixin {
   final columnController = TextEditingController(text: "3840");
   final rowController = TextEditingController(text: "2160");
   final fpsController = TextEditingController(text: "120");
@@ -24,8 +21,8 @@ class _TconInputScreenState extends State<TconInputScreen>
   final ddrSpeedController = TextEditingController(text: "1866");
   final ddrWidthController = TextEditingController(text: "16");
 
-  double horizontalTimeSliderValue = 10;
-  double _storage_video_compression_ratio = 50;
+  double horizontal_time_margin = 10;
+  double storage_video_compression_ratio = 50;
 
   @override
   bool wantKeepAlive = true;
@@ -33,40 +30,9 @@ class _TconInputScreenState extends State<TconInputScreen>
   @override
   void initState() {
     super.initState();
-    context.read<BpsCalc>().initDisplay(
-        double.parse(columnController.text),
-        double.parse(rowController.text),
-        double.parse(fpsController.text),
-        double.parse(dataWidthController.text),
-        double.parse(colorController.text),
-        double.parse(ddrSpeedController.text),
-        double.parse(ddrWidthController.text));
-    context.read<BpsCalc>().initDisplay2(
-          _storage_video_compression_ratio,
-        );
-  }
 
-  void refreshUI() {
-    context.read<BpsCalc>().columnUpdate(double.parse(columnController.text));
-    context.read<BpsCalc>().rowUpdate(double.parse(rowController.text));
-    context.read<BpsCalc>().fpsUpdate(double.parse(fpsController.text));
-    context
-        .read<BpsCalc>()
-        .dataWidthUpdata(double.parse(dataWidthController.text));
-    context.read<BpsCalc>().colorUpdate(double.parse(colorController.text));
-
-    context
-        .read<BpsCalc>()
-        .ddrSpeedUpdate(double.parse(ddrSpeedController.text));
-    context
-        .read<BpsCalc>()
-        .ddrWidthUpdate(double.parse(ddrWidthController.text));
-
-    context.read<BpsCalc>().horizontalMarginUpdate(horizontalTimeSliderValue);
-
-    context.read<BpsCalc>().bpsCalculate();
-    context.read<BpsCalc>().frameMemStorageCalc();
-    context.read<BpsCalc>().frameMemoryUpdate(_storage_video_compression_ratio);
+    context.read<Calculation>().initDisplay(columnController.text, rowController.text, fpsController.text, dataWidthController.text, colorController.text, ddrSpeedController.text,
+        ddrWidthController.text, horizontal_time_margin, storage_video_compression_ratio);
   }
 
   @override
@@ -107,8 +73,9 @@ class _TconInputScreenState extends State<TconInputScreen>
                       controller: columnController,
                       onChanged: (value) {
                         if (value == '') {
-                        } else
-                          refreshUI();
+                        } else {
+                          context.read<Calculation>().updateEach('number_of_column', value);
+                        }
                       },
                     )),
                     Expanded(
@@ -118,8 +85,9 @@ class _TconInputScreenState extends State<TconInputScreen>
                       controller: rowController,
                       onChanged: (value) {
                         if (value == '') {
-                        } else
-                          refreshUI();
+                        } else {
+                          context.read<Calculation>().updateEach('number_of_row', value);
+                        }
                       },
                     )),
                     Expanded(
@@ -129,8 +97,9 @@ class _TconInputScreenState extends State<TconInputScreen>
                       controller: fpsController,
                       onChanged: (value) {
                         if (value == '') {
-                        } else
-                          refreshUI();
+                        } else {
+                          context.read<Calculation>().updateEach('frame_frequency', value);
+                        }
                       },
                     )),
                   ],
@@ -143,13 +112,13 @@ class _TconInputScreenState extends State<TconInputScreen>
                     Expanded(
                         child: TextField(
                       keyboardType: TextInputType.number,
-                      decoration:
-                          const InputDecoration(labelText: "Data Width"),
+                      decoration: const InputDecoration(labelText: "Data Width"),
                       controller: dataWidthController,
                       onChanged: (value) {
                         if (value == '') {
-                        } else
-                          refreshUI();
+                        } else {
+                          context.read<Calculation>().updateEach('data_width', value);
+                        }
                       },
                     )),
                     Expanded(
@@ -160,7 +129,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                       onChanged: (value) {
                         if (value == '') {
                         } else {
-                          refreshUI();
+                          context.read<Calculation>().updateEach('number_of_color', value);
                         }
                       },
                     )),
@@ -171,8 +140,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                               style: const TextStyle(
                                 fontSize: 15,
                               )),
-                          Text(
-                              '${NumberFormat('##.##').format(context.watch<BpsCalc>().bps_calc_result_gibps)} Gibps',
+                          Text('${NumberFormat('##.##').format(context.watch<Calculation>().bps_calc_result_gibps)} Gibps',
                               style: const TextStyle(
                                 fontSize: 17,
                                 color: Colors.blue,
@@ -195,7 +163,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                       onChanged: (value) {
                         if (value == '') {
                         } else {
-                          refreshUI();
+                          context.read<Calculation>().updateEach('ddr_speed', value);
                         }
                       },
                     )),
@@ -207,7 +175,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                       onChanged: (value) {
                         if (value == '') {
                         } else {
-                          refreshUI();
+                          context.read<Calculation>().updateEach('ddr_width', value);
                         }
                       },
                     )),
@@ -218,11 +186,8 @@ class _TconInputScreenState extends State<TconInputScreen>
                               style: const TextStyle(
                                 fontSize: 15,
                               )),
-                          Text(
-                              '${NumberFormat('##.##').format(context.watch<BpsCalc>().bps_calc_ddr)} Gibps',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  fontSize: 17, color: Colors.blue)),
+                          Text('${NumberFormat('##.##').format(context.watch<Calculation>().bps_calc_ddr)} Gibps',
+                              textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: Colors.blue)),
                         ],
                       ),
                     ),
@@ -250,7 +215,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                               fontSize: 17,
                             )),
                         SfSlider(
-                          value: horizontalTimeSliderValue,
+                          value: horizontal_time_margin,
                           min: 0,
                           max: 20,
                           showTicks: true,
@@ -262,15 +227,15 @@ class _TconInputScreenState extends State<TconInputScreen>
                           shouldAlwaysShowTooltip: true,
                           onChanged: (value) {
                             setState(() {
-                              horizontalTimeSliderValue = value;
-                              refreshUI();
+                              horizontal_time_margin = value;
+                              context.read<Calculation>().updateEach('horizontal_time_margin', value.toString());
                             });
                           },
                         ),
                       ],
                     ),
                     Text(
-                      '${NumberFormat('##.###').format(context.watch<BpsCalc>().horizontal_time)} us',
+                      '${NumberFormat('##.###').format(context.watch<Calculation>().horizontal_time)} us',
                       style: const TextStyle(fontSize: 20),
                     ),
                   ],
@@ -297,7 +262,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                               fontSize: 17,
                             )),
                         SfSlider(
-                          value: _storage_video_compression_ratio,
+                          value: storage_video_compression_ratio,
                           min: 0,
                           max: 100,
                           showTicks: true,
@@ -309,8 +274,8 @@ class _TconInputScreenState extends State<TconInputScreen>
                           shouldAlwaysShowTooltip: true,
                           onChanged: (value) {
                             setState(() {
-                              _storage_video_compression_ratio = value;
-                              refreshUI();
+                              storage_video_compression_ratio = value;
+                              context.read<Calculation>().updateEach('storage_video_compression_ratio', value.toString());
                             });
                           },
                         ),
@@ -323,7 +288,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                           style: const TextStyle(fontSize: 15),
                         ),
                         Text(
-                          '${NumberFormat('##.##').format(context.watch<BpsCalc>().storage_video_result_mibits)} Mbits',
+                          '${NumberFormat('##.##').format(context.watch<Calculation>().storage_video_result_mibits)} Mbits',
                           style: const TextStyle(fontSize: 20),
                         ),
                       ],
@@ -368,7 +333,7 @@ class _TconInputScreenState extends State<TconInputScreen>
                   height: 20,
                 ),
                 Text(
-                  '${context.watch<BpsCalc>().ddr_frame_buffer.ceil()} ea of DDR Memory required \nwith ${(context.watch<BpsCalc>().margin_frame_buffer * 100).toStringAsFixed(2)}% of margin',
+                  '${context.watch<Calculation>().ddr_frame_buffer.ceil()} ea of DDR Memory required \nwith ${(context.watch<Calculation>().margin_frame_buffer * 100).toStringAsFixed(2)}% of margin',
                   style: const TextStyle(fontSize: 20),
                 ),
               ],

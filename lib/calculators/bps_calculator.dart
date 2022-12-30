@@ -1,6 +1,8 @@
+import 'package:display_bandwidth_calc/screens/tcon_input_screen.dart';
 import 'package:flutter/material.dart';
 
-class BpsCalc with ChangeNotifier {
+class Calculation with ChangeNotifier {
+  //#region for 사용자 입력
   double _number_of_column = 0;
   double get number_of_column => _number_of_column;
 
@@ -22,6 +24,32 @@ class BpsCalc with ChangeNotifier {
   double _ddr_width = 0;
   double get ddr_width => _ddr_width;
 
+  double _horizontal_time_margin = 0;
+  double get horizontal_time_margin => _horizontal_time_margin;
+
+  double _storage_video_compression_ratio = 0;
+  double get storage_video_compression_ratio => _storage_video_compression_ratio;
+
+  double _vth_data_compression_ratio = 0;
+  double get vth_data_compression_ratio => _vth_data_compression_ratio;
+
+  double _comp_vth_data_to_read = 0;
+  double get comp_vth_data_to_read => _comp_vth_data_to_read;
+
+  double _mobility_data_compression_ratio = 0;
+  double get mobility_data_compression_ratio => _mobility_data_compression_ratio;
+
+  double _comp_mobility_data_to_read = 0;
+  double get comp_mobility_data_to_read => _comp_mobility_data_to_read;
+
+  double _oled_data_compression_ratio = 0;
+  double get oled_data_compression_ratio => _oled_data_compression_ratio;
+
+  double _comp_oled_data_to_read = 0;
+  double get comp_oled_data_to_read => _comp_oled_data_to_read;
+
+//#endregion
+
   double _bps_calc_result_gibps = 0;
   double get bps_calc_result_gibps => _bps_calc_result_gibps;
 
@@ -33,13 +61,6 @@ class BpsCalc with ChangeNotifier {
 
   double _horizontal_time = 0;
   double get horizontal_time => _horizontal_time;
-
-  double _horizontalTimeSliderValue = 10;
-  double get horizontalTimeSliderValue => _horizontalTimeSliderValue;
-
-  double _storage_video_compression_ratio = 50;
-  double get storage_video_compression_ratio =>
-      _storage_video_compression_ratio;
 
   double _video_data_to_read_write = 0;
   double get video_data_to_read_write => _video_data_to_read_write;
@@ -53,31 +74,12 @@ class BpsCalc with ChangeNotifier {
   double _ddr_frame_buffer = 0;
   double get ddr_frame_buffer => _ddr_frame_buffer;
 
-  double _vth_data_compression_ratio = 0;
-  double get vth_data_compression_ratio => _vth_data_compression_ratio;
-
-  double _mobility_data_compression_ratio = 0;
-  double get mobility_data_compression_ratio =>
-      _mobility_data_compression_ratio;
-
-  double _oled_data_compression_ratio = 0;
-  double get oled_data_compression_ratio => _oled_data_compression_ratio;
-
   double _margin_frame_buffer = 0;
   double get margin_frame_buffer => _margin_frame_buffer;
 
   double _comp_vth_data_to_read_total = 0;
-  double _comp_vth_data_to_read = 0;
-  double get comp_vth_data_to_read => _comp_vth_data_to_read;
-
   double _comp_mobility_data_to_read_total = 0;
-  double _comp_mobility_data_to_read = 0;
-  double get comp_mobility_data_to_read => _comp_mobility_data_to_read;
-
   double _comp_oled_data_to_read_total = 0;
-  double _comp_oled_data_to_read = 0;
-  double get comp_oled_data_to_read => _comp_oled_data_to_read;
-
   double _comp_data_to_read_total = 0;
 
   double _bw_comp_data = 0;
@@ -87,183 +89,136 @@ class BpsCalc with ChangeNotifier {
   double _margin_comp_data = 0;
   double get margin_comp_data => _margin_comp_data;
 
-  void columnUpdate(number_of_column) {
-    _number_of_column = number_of_column;
+  void updateEach(String varName, String varValueString) {
+    double varValue = double.parse(varValueString);
+    switch (varName) {
+      case 'number_of_column':
+        _number_of_column = varValue;
+        print(_number_of_column);
+        break;
+      case 'number_of_row':
+        _number_of_row = varValue;
+        break;
+      case 'frame_frequency':
+        _frame_frequency = varValue;
+        break;
+      case 'data_width':
+        _data_width = varValue;
+        break;
+      case 'number_of_color':
+        _number_of_color = varValue;
+        break;
+      case 'ddr_speed':
+        _ddr_speed = varValue;
+        break;
+      case 'ddr_width':
+        _ddr_width = varValue;
+        break;
+      case 'horizontal_time_margin':
+        _horizontal_time_margin = varValue;
+        break;
+      case 'storage_video_compression_ratio':
+        _storage_video_compression_ratio = varValue;
+        // _video_data_to_read_write = video_data_to_read_write;
+        break;
+      case 'vth_data_compression_ratio':
+        _vth_data_compression_ratio = varValue;
+        break;
+      case 'comp_vth_data_to_read':
+        _comp_vth_data_to_read = varValue;
+        break;
+      case 'mobility_data_compression_ratio':
+        _mobility_data_compression_ratio = varValue;
+        break;
+      case 'comp_mobility_data_to_read':
+        _comp_mobility_data_to_read = varValue;
+        break;
+      case 'oled_data_compression_ratio':
+        _oled_data_compression_ratio = varValue;
+        break;
+      case 'comp_oled_data_to_read':
+        _comp_oled_data_to_read = varValue;
+        break;
+
+      default:
+        break;
+    }
+    bpsCalculate();
     notifyListeners();
   }
 
-  void rowUpdate(number_of_row) {
-    _number_of_row = number_of_row;
-    notifyListeners();
-  }
+//#region initDisplay 1, 2, 3
 
-  void fpsUpdate(frame_frequency) {
-    _frame_frequency = frame_frequency;
-    notifyListeners();
-  }
-
-  void dataWidthUpdata(data_width) {
-    _data_width = data_width;
-    notifyListeners();
-  }
-
-  void colorUpdate(number_of_color) {
-    _number_of_color = number_of_color;
-    notifyListeners();
-  }
-
-  void ddrSpeedUpdate(ddr_speed) {
-    _ddr_speed = ddr_speed;
-    notifyListeners();
-  }
-
-  void ddrWidthUpdate(ddr_width) {
-    _ddr_width = ddr_width;
-    notifyListeners();
-  }
-
-  void horizontalMarginUpdate(horizontalTimeSliderValue) {
-    _horizontalTimeSliderValue = horizontalTimeSliderValue;
-    notifyListeners();
-  }
-
-  void frameMemoryUpdate(storage_video_compression_ratio) {
+  void initDisplay(number_of_column, number_of_row, frame_frequency, data_width, number_of_color, ddr_speed, ddr_width, horizontal_time_margin, storage_video_compression_ratio) {
+    _number_of_column = double.parse(number_of_column);
+    _number_of_row = double.parse(number_of_row);
+    _frame_frequency = double.parse(frame_frequency);
+    _data_width = double.parse(data_width);
+    _number_of_color = double.parse(number_of_color);
+    _ddr_speed = double.parse(ddr_speed);
+    _ddr_width = double.parse(ddr_width);
+    _horizontal_time_margin = horizontal_time_margin;
     _storage_video_compression_ratio = storage_video_compression_ratio;
-    _video_data_to_read_write = video_data_to_read_write;
-    notifyListeners();
+
+    bpsCalculate();
   }
 
-  void vthDataUpdate(vth_data_compression_ratio, comp_vth_data_to_read) {
+  void initDisplay3(vth_data_compression_ratio, comp_vth_data_to_read, mobility_data_compression_ratio, comp_mobility_data_to_read, oled_data_compression_ratio, comp_oled_data_to_read) {
     _vth_data_compression_ratio = vth_data_compression_ratio;
-    _comp_vth_data_to_read = comp_vth_data_to_read;
-    notifyListeners();
-  }
-
-  void mobilityDataUpdate(
-      mobility_data_compression_ratio, comp_mobility_data_to_read) {
+    _comp_vth_data_to_read = double.parse(comp_vth_data_to_read);
     _mobility_data_compression_ratio = mobility_data_compression_ratio;
-    _comp_mobility_data_to_read = comp_mobility_data_to_read;
-    notifyListeners();
-  }
-
-  void oledDataUpdate(oled_data_compression_ratio, comp_oled_data_to_read) {
+    _comp_mobility_data_to_read = double.parse(comp_mobility_data_to_read);
     _oled_data_compression_ratio = oled_data_compression_ratio;
-    _comp_oled_data_to_read = comp_oled_data_to_read;
-    notifyListeners();
+    _comp_oled_data_to_read = double.parse(comp_oled_data_to_read);
+
+    bpsCalculate();
   }
-
-  void initDisplay(number_of_column, number_of_row, frame_frequency, data_width,
-      number_of_color, ddr_speed, ddr_width) {
-    _number_of_column = number_of_column;
-    _number_of_row = number_of_row;
-    _frame_frequency = frame_frequency;
-    _data_width = data_width;
-    _number_of_color = number_of_color;
-
-    _ddr_speed = ddr_speed;
-    _ddr_width = ddr_width;
-
-    _bps_calc_result_gibps = number_of_column *
-        number_of_row *
-        frame_frequency *
-        number_of_color *
-        data_width /
-        1024 /
-        1024 /
-        1024;
-
-    _bps_calc_ddr = ddr_speed * ddr_width / 1024;
-
-    _vertical_time = (1 / frame_frequency);
-    _horizontal_time = (1 - _horizontalTimeSliderValue / 100) *
-        _vertical_time /
-        number_of_row *
-        1000000;
-  }
-
-  void initDisplay2(storage_video_compression_ratio) {
-    _storage_video_compression_ratio = storage_video_compression_ratio;
-    _video_data_to_read_write = (1 - _storage_video_compression_ratio / 100) *
-        number_of_column *
-        // number_of_row *
-        number_of_color *
-        data_width *
-        2;
-
-    _storage_video_result_mibits =
-        _video_data_to_read_write * number_of_row / 1024 / 1024;
-
-    _bw_frame_buffer = _video_data_to_read_write / _horizontal_time / 1024;
-
-    _ddr_frame_buffer = (_bw_frame_buffer / _bps_calc_ddr);
-    _margin_frame_buffer =
-        1 - _bw_frame_buffer / (_bps_calc_ddr * _ddr_frame_buffer.ceil());
-  }
-
-  void initDisplay3(
-      vth_data_compression_ratio,
-      comp_vth_data_to_read,
-      mobility_data_compression_ratio,
-      comp_mobility_data_to_read,
-      oled_data_compression_ratio,
-      comp_oled_data_to_read) {
-    _vth_data_compression_ratio = vth_data_compression_ratio;
-    _comp_vth_data_to_read = comp_vth_data_to_read;
-    _mobility_data_compression_ratio = mobility_data_compression_ratio;
-    _comp_mobility_data_to_read = comp_mobility_data_to_read;
-    _oled_data_compression_ratio = oled_data_compression_ratio;
-    _comp_oled_data_to_read = comp_oled_data_to_read;
-
-    _comp_vth_data_to_read_total = (1 - _vth_data_compression_ratio / 100) *
-        _number_of_column *
-        _number_of_color *
-        _comp_vth_data_to_read;
-
-    _comp_mobility_data_to_read_total =
-        (1 - _mobility_data_compression_ratio / 100) *
-            _number_of_column *
-            _number_of_color *
-            _comp_mobility_data_to_read;
-
-    _comp_oled_data_to_read_total = (1 - _oled_data_compression_ratio / 100) *
-        _number_of_column *
-        _number_of_color *
-        _comp_oled_data_to_read;
-
-    _comp_data_to_read_total = _comp_vth_data_to_read_total +
-        _comp_mobility_data_to_read_total +
-        _comp_oled_data_to_read_total;
-
-    _bw_comp_data = _comp_data_to_read_total / _horizontal_time / 1024;
-    _ddr_comp_data = _bw_comp_data / _bps_calc_ddr;
-    _margin_comp_data =
-        1 - _bw_comp_data / (_bps_calc_ddr * _ddr_comp_data.ceil());
-  }
+//#endregion
 
   void bpsCalculate() {
-    _bps_calc_result_gibps = number_of_column *
-        number_of_row *
-        frame_frequency *
-        number_of_color *
-        data_width /
-        1024 /
-        1024 /
-        1024;
+    // Video Bandwidth
+    _bps_calc_result_gibps = _number_of_column * _number_of_row * _frame_frequency * _number_of_color * _data_width / 1024 / 1024 / 1024;
 
-    _bps_calc_ddr = ddr_speed * ddr_width / 1024;
+    // DDR Bandwidth
+    _bps_calc_ddr = _ddr_speed * _ddr_width / 1024;
 
-    _vertical_time = (1 / frame_frequency);
-    _horizontal_time = (1 - _horizontalTimeSliderValue / 100) *
-        _vertical_time /
-        number_of_row *
-        1000000;
+    // Vertical time
+    _vertical_time = (1 / _frame_frequency);
 
-    notifyListeners();
-  }
+    // Horizontal time
+    _horizontal_time = (1 - _horizontal_time_margin / 100) * _vertical_time / _number_of_row * 1000000;
 
-  void frameMemStorageCalc() {
-    initDisplay2(storage_video_compression_ratio);
+    // Video Frame Data One Line
+    _video_data_to_read_write = (1 - _storage_video_compression_ratio / 100) * _number_of_column * _number_of_color * _data_width * 2;
 
-    notifyListeners();
+    // Video Frame Data Storage
+    _storage_video_result_mibits = _video_data_to_read_write * _number_of_row / 1024 / 1024;
+
+    // ----------- Result Text ------------
+    // Frame memory Bandwidth required
+    _bw_frame_buffer = _video_data_to_read_write / _horizontal_time / 1024;
+    // Number of DDR memory
+    _ddr_frame_buffer = (_bw_frame_buffer / _bps_calc_ddr);
+    // Margin of Frame buffer bandwidth
+    _margin_frame_buffer = 1 - _bw_frame_buffer / (_bps_calc_ddr * _ddr_frame_buffer.ceil());
+
+    // Vth data
+    _comp_vth_data_to_read_total = (1 - _vth_data_compression_ratio / 100) * _number_of_column * _number_of_color * _comp_vth_data_to_read;
+    // Mobility data
+    _comp_mobility_data_to_read_total = (1 - _mobility_data_compression_ratio / 100) * _number_of_column * _number_of_color * _comp_mobility_data_to_read;
+    // OLED data
+    _comp_oled_data_to_read_total = (1 - _oled_data_compression_ratio / 100) * _number_of_column * _number_of_color * _comp_oled_data_to_read;
+    // Total data
+    _comp_data_to_read_total = _comp_vth_data_to_read_total + _comp_mobility_data_to_read_total + _comp_oled_data_to_read_total;
+
+    // ----------- Result Text ------------
+    // Compensation memory Bandwidth required
+    _bw_comp_data = _comp_data_to_read_total / _horizontal_time / 1024;
+    // Number of DDR Memory
+    _ddr_comp_data = _bw_comp_data / _bps_calc_ddr;
+    // Margin of Frame buffer bandwidth
+    _margin_comp_data = 1 - _bw_comp_data / (_bps_calc_ddr * _ddr_comp_data.ceil());
+
+    // notifyListeners();
   }
 }
