@@ -4,6 +4,7 @@ import 'package:display_bandwidth_calc/calculators/bps_calculator.dart';
 import 'package:intl/number_symbols_data.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
+import 'package:display_bandwidth_calc/calculators/model.dart';
 
 class TconInputScreen extends StatefulWidget {
   const TconInputScreen({Key? key}) : super(key: key);
@@ -14,15 +15,24 @@ class TconInputScreen extends StatefulWidget {
 
 class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAliveClientMixin {
   final columnController = TextEditingController(text: "3840");
+  final hBlankController = TextEditingController(text: "560");
   final rowController = TextEditingController(text: "2160");
-  final fpsController = TextEditingController(text: "120");
+  final vBlankController = TextEditingController(text: "90");
+
   final colorController = TextEditingController(text: "3");
   final dataWidthController = TextEditingController(text: "10");
+  // final fpsController = TextEditingController(text: "120");
+  final dclkController = TextEditingController(text: "74.25");
+  final laneController = TextEditingController(text: "16");
+
   final ddrSpeedController = TextEditingController(text: "1866");
   final ddrWidthController = TextEditingController(text: "16");
 
-  double horizontal_time_margin = 10;
+  double horizontal_time_margin = 5;
   double storage_video_compression_ratio = 50;
+
+  List<String> dropdownList = ['1', '2', '3'];
+  String selectDropdown = '1';
 
   @override
   bool wantKeepAlive = true;
@@ -30,9 +40,7 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
   @override
   void initState() {
     super.initState();
-
-    context.read<Calculation>().initDisplay(columnController.text, rowController.text, fpsController.text, dataWidthController.text, colorController.text, ddrSpeedController.text,
-        ddrWidthController.text, horizontal_time_margin, storage_video_compression_ratio);
+    context.read<Calculation>().bpsCalculate();
   }
 
   @override
@@ -51,6 +59,18 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
             physics: ClampingScrollPhysics(),
             child: Column(
               children: [
+                DropdownButton<String>(
+                    items: dropdownList.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        child: Text(value),
+                        value: value,
+                      );
+                    }).toList(),
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectDropdown = value!;
+                      });
+                    }),
                 const SizedBox(
                   height: 15.0,
                 ),
@@ -81,6 +101,18 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                     Expanded(
                         child: TextField(
                       keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: "H-Blank"),
+                      controller: hBlankController,
+                      onChanged: (value) {
+                        if (value == '') {
+                        } else {
+                          context.read<Calculation>().updateEach('number_of_hblank', value);
+                        }
+                      },
+                    )),
+                    Expanded(
+                        child: TextField(
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(labelText: "Row"),
                       controller: rowController,
                       onChanged: (value) {
@@ -93,12 +125,12 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                     Expanded(
                         child: TextField(
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: "FPS"),
-                      controller: fpsController,
+                      decoration: const InputDecoration(labelText: "V-Blank"),
+                      controller: vBlankController,
                       onChanged: (value) {
                         if (value == '') {
                         } else {
-                          context.read<Calculation>().updateEach('frame_frequency', value);
+                          context.read<Calculation>().updateEach('number_of_vblank', value);
                         }
                       },
                     )),
@@ -109,6 +141,18 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                 ),
                 Row(
                   children: [
+                    Expanded(
+                        child: TextField(
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: "Input Lanes"),
+                      controller: laneController,
+                      onChanged: (value) {
+                        if (value == '') {
+                        } else {
+                          context.read<Calculation>().updateEach('number_of_lane', value);
+                        }
+                      },
+                    )),
                     Expanded(
                         child: TextField(
                       keyboardType: TextInputType.number,
@@ -134,13 +178,25 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                       },
                     )),
                     Expanded(
+                        child: TextField(
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: "DCLK(MHz)"),
+                      controller: dclkController,
+                      onChanged: (value) {
+                        if (value == '') {
+                        } else {
+                          context.read<Calculation>().updateEach('dclk_frequency', value);
+                        }
+                      },
+                    )),
+                    Expanded(
                       child: Column(
                         children: [
-                          Text('Video B/W',
+                          Text('FPS',
                               style: const TextStyle(
                                 fontSize: 15,
                               )),
-                          Text('${NumberFormat('##.##').format(context.watch<Calculation>().bps_calc_result_gibps)} Gibps',
+                          Text('${NumberFormat('##.##').format(context.watch<Calculation>().fV)} Hz',
                               style: const TextStyle(
                                 fontSize: 17,
                                 color: Colors.blue,
@@ -154,11 +210,21 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                   height: 10.0,
                 ),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('DDR Information',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ],
+                ),
+                Row(
                   children: [
                     Expanded(
                         child: TextField(
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: "DDR speed"),
+                      decoration: const InputDecoration(labelText: "DDR (MT/s)"),
                       controller: ddrSpeedController,
                       onChanged: (value) {
                         if (value == '') {
@@ -217,12 +283,12 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                         SfSlider(
                           value: horizontal_time_margin,
                           min: 0,
-                          max: 20,
+                          max: 10,
                           showTicks: true,
                           showLabels: true,
                           showDividers: true,
-                          interval: 10,
-                          stepSize: 1,
+                          interval: 2,
+                          stepSize: 0.5,
                           enableTooltip: true,
                           shouldAlwaysShowTooltip: true,
                           onChanged: (value) {
@@ -264,11 +330,11 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                         SfSlider(
                           value: storage_video_compression_ratio,
                           min: 0,
-                          max: 100,
+                          max: 80,
                           showTicks: true,
                           showLabels: true,
                           showDividers: true,
-                          interval: 25,
+                          interval: 20,
                           stepSize: 1,
                           enableTooltip: true,
                           shouldAlwaysShowTooltip: true,

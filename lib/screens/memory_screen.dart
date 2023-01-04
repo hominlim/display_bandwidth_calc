@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:display_bandwidth_calc/calculators/bps_calculator.dart';
-import 'package:display_bandwidth_calc/main.dart';
+import 'package:display_bandwidth_calc/screens/tcon_input_screen.dart';
 import 'package:provider/provider.dart';
 
 class MemoryScreen extends StatefulWidget {
@@ -14,8 +14,6 @@ class MemoryScreen extends StatefulWidget {
 }
 
 class _MemoryScreenState extends State<MemoryScreen> with AutomaticKeepAliveClientMixin {
-  Calculation bps = Calculation();
-
   bool _is_frame_buffer = false;
   double _vth_data_compression_ratio = 50;
   double _mobility_data_compression_ratio = 50;
@@ -25,18 +23,17 @@ class _MemoryScreenState extends State<MemoryScreen> with AutomaticKeepAliveClie
   final mobilityController = TextEditingController(text: "6");
   final oledController = TextEditingController(text: "8");
 
+  // final ddrSpeedController = TextEditingController(text: "1866");
+  // final ddrWidthController = TextEditingController(text: "16");
+
   @override
   bool wantKeepAlive = true;
 
   @override
   void initState() {
     super.initState();
-    context
-        .read<Calculation>()
-        .initDisplay3(_vth_data_compression_ratio, vthController.text, _mobility_data_compression_ratio, mobilityController.text, _oled_data_compression_ratio, oledController.text);
+    context.read<Calculation>().bpsCalculate();
   }
-
-  void refreshUI() {}
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +48,56 @@ class _MemoryScreenState extends State<MemoryScreen> with AutomaticKeepAliveClie
           child: Container(
               margin: EdgeInsets.only(left: 10, right: 30),
               child: Column(children: [
+                // Row(
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     Text('DDR Information',
+                //         style: const TextStyle(
+                //           fontSize: 20,
+                //           fontWeight: FontWeight.bold,
+                //         )),
+                //   ],
+                // ),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //         child: TextField(
+                //       keyboardType: TextInputType.number,
+                //       decoration: const InputDecoration(labelText: "DDR (MT/s)"),
+                //       controller: ddrSpeedController,
+                //       onChanged: (value) {
+                //         if (value == '') {
+                //         } else {
+                //           context.read<Calculation>().updateEach('ddr_speed', value);
+                //         }
+                //       },
+                //     )),
+                //     Expanded(
+                //         child: TextField(
+                //       keyboardType: TextInputType.number,
+                //       decoration: const InputDecoration(labelText: "Width by"),
+                //       controller: ddrWidthController,
+                //       onChanged: (value) {
+                //         if (value == '') {
+                //         } else {
+                //           context.read<Calculation>().updateEach('ddr_width', value);
+                //         }
+                //       },
+                //     )),
+                //     Expanded(
+                //       child: Column(
+                //         children: [
+                //           Text('DDR B/W',
+                //               style: const TextStyle(
+                //                 fontSize: 15,
+                //               )),
+                //           Text('${NumberFormat('##.##').format(context.watch<Calculation>().bps_calc_ddr)} Gibps',
+                //               textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: Colors.blue)),
+                //         ],
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 SizedBox(
                   height: 15,
                 ),
