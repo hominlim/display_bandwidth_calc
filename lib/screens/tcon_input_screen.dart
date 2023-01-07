@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:display_bandwidth_calc/calculators/bps_calculator.dart';
-import 'package:intl/number_symbols_data.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:display_bandwidth_calc/calculators/model.dart';
@@ -21,7 +20,6 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
 
   final colorController = TextEditingController(text: "3");
   final dataWidthController = TextEditingController(text: "10");
-  // final fpsController = TextEditingController(text: "120");
   final dclkController = TextEditingController(text: "74.25");
   final laneController = TextEditingController(text: "16");
 
@@ -29,18 +27,55 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
   final ddrWidthController = TextEditingController(text: "16");
 
   double horizontal_time_margin = 5;
-  double storage_video_compression_ratio = 50;
+  // double storage_video_compression_ratio = 50;
 
-  List<String> dropdownList = ['1', '2', '3'];
-  String selectDropdown = '1';
+  List<String> modelName = ['Modified'];
+  List<dynamic> modelInfo = [];
+  // String selectDropdown = modelSelect;
 
   @override
   bool wantKeepAlive = true;
+
+  void extractModelName(List<ModelInfo> model) {
+    for (var i in model) {
+      modelName.add(i.modelName);
+    }
+  }
+
+  void findModel(List<ModelInfo> model, String modelSelect) {
+    for (var i in model) {
+      if (i.modelName == modelSelect) {
+        modelInfo = i.returnAsList();
+        // print(modelInfo);
+        columnController.text = modelInfo[1].toStringAsFixed(0);
+        hBlankController.text = modelInfo[2].toStringAsFixed(0);
+        rowController.text = modelInfo[3].toStringAsFixed(0);
+        vBlankController.text = modelInfo[4].toStringAsFixed(0);
+        laneController.text = modelInfo[5].toStringAsFixed(0);
+        dclkController.text = modelInfo[6].toStringAsFixed(2);
+        dataWidthController.text = modelInfo[7].toStringAsFixed(0);
+        colorController.text = modelInfo[8].toStringAsFixed(0);
+        return;
+      }
+    }
+  }
+
+  void updataAll() {
+    context.read<Calculation>().updateEach('number_of_column', columnController.text);
+    context.read<Calculation>().updateEach('number_of_hblank', hBlankController.text);
+    context.read<Calculation>().updateEach('number_of_row', rowController.text);
+    context.read<Calculation>().updateEach('number_of_vblank', vBlankController.text);
+    context.read<Calculation>().updateEach('number_of_lane', laneController.text);
+    context.read<Calculation>().updateEach('dclk_frequency', dclkController.text);
+    context.read<Calculation>().updateEach('data_width', dataWidthController.text);
+    context.read<Calculation>().updateEach('number_of_color', colorController.text);
+  }
 
   @override
   void initState() {
     super.initState();
     context.read<Calculation>().bpsCalculate();
+    extractModelName(modelList);
   }
 
   @override
@@ -59,32 +94,39 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
             physics: ClampingScrollPhysics(),
             child: Column(
               children: [
-                DropdownButton<String>(
-                    items: dropdownList.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        child: Text(value),
-                        value: value,
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectDropdown = value!;
-                      });
-                    }),
                 const SizedBox(
                   height: 15.0,
                 ),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text('Input information',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         )),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    DropdownButton(
+                        value: modelSelect,
+                        items: modelName.map((String item) {
+                          return DropdownMenuItem<String>(
+                            child: Text('$item'),
+                            value: item,
+                          );
+                        }).toList(),
+                        onChanged: (dynamic value) {
+                          setState(() {
+                            modelSelect = value;
+                            findModel(modelList, value!);
+                            updataAll();
+                          });
+                        }),
                   ],
                 ),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                         child: TextField(
@@ -92,6 +134,7 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                       decoration: const InputDecoration(labelText: "Column"),
                       controller: columnController,
                       onChanged: (value) {
+                        modelSelect = 'Modified';
                         if (value == '') {
                         } else {
                           context.read<Calculation>().updateEach('number_of_column', value);
@@ -104,6 +147,7 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                       decoration: const InputDecoration(labelText: "H-Blank"),
                       controller: hBlankController,
                       onChanged: (value) {
+                        modelSelect = 'Modified';
                         if (value == '') {
                         } else {
                           context.read<Calculation>().updateEach('number_of_hblank', value);
@@ -116,6 +160,7 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                       decoration: const InputDecoration(labelText: "Row"),
                       controller: rowController,
                       onChanged: (value) {
+                        modelSelect = 'Modified';
                         if (value == '') {
                         } else {
                           context.read<Calculation>().updateEach('number_of_row', value);
@@ -128,6 +173,7 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                       decoration: const InputDecoration(labelText: "V-Blank"),
                       controller: vBlankController,
                       onChanged: (value) {
+                        modelSelect = 'Modified';
                         if (value == '') {
                         } else {
                           context.read<Calculation>().updateEach('number_of_vblank', value);
@@ -140,13 +186,15 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                   height: 10.0,
                 ),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                         child: TextField(
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: "Input Lanes"),
+                      decoration: const InputDecoration(labelText: "Lanes"),
                       controller: laneController,
                       onChanged: (value) {
+                        modelSelect = 'Modified';
                         if (value == '') {
                         } else {
                           context.read<Calculation>().updateEach('number_of_lane', value);
@@ -156,9 +204,23 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                     Expanded(
                         child: TextField(
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: "Data Width"),
+                      decoration: const InputDecoration(labelText: "DCLK"),
+                      controller: dclkController,
+                      onChanged: (value) {
+                        modelSelect = 'Modified';
+                        if (value == '') {
+                        } else {
+                          context.read<Calculation>().updateEach('dclk_frequency', value);
+                        }
+                      },
+                    )),
+                    Expanded(
+                        child: TextField(
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: "Width"),
                       controller: dataWidthController,
                       onChanged: (value) {
+                        modelSelect = 'Modified';
                         if (value == '') {
                         } else {
                           context.read<Calculation>().updateEach('data_width', value);
@@ -171,24 +233,21 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                       decoration: const InputDecoration(labelText: "Colors"),
                       controller: colorController,
                       onChanged: (value) {
+                        modelSelect = 'Modified';
                         if (value == '') {
                         } else {
                           context.read<Calculation>().updateEach('number_of_color', value);
                         }
                       },
                     )),
-                    Expanded(
-                        child: TextField(
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: "DCLK(MHz)"),
-                      controller: dclkController,
-                      onChanged: (value) {
-                        if (value == '') {
-                        } else {
-                          context.read<Calculation>().updateEach('dclk_frequency', value);
-                        }
-                      },
-                    )),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                     Expanded(
                       child: Column(
                         children: [
@@ -196,7 +255,22 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                               style: const TextStyle(
                                 fontSize: 15,
                               )),
-                          Text('${NumberFormat('##.##').format(context.watch<Calculation>().fV)} Hz',
+                          Text('${(context.watch<Calculation>().fV * 1000000).toStringAsFixed(0)} Hz',
+                              style: const TextStyle(
+                                fontSize: 17,
+                                color: Colors.blue,
+                              )),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text('V-blank',
+                              style: const TextStyle(
+                                fontSize: 15,
+                              )),
+                          Text('${(context.watch<Calculation>().fVB).toStringAsFixed(0)} us',
                               style: const TextStyle(
                                 fontSize: 17,
                                 color: Colors.blue,
@@ -207,7 +281,7 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                   ],
                 ),
                 const SizedBox(
-                  height: 10.0,
+                  height: 30.0,
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,8 +326,7 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                               style: const TextStyle(
                                 fontSize: 15,
                               )),
-                          Text('${NumberFormat('##.##').format(context.watch<Calculation>().bps_calc_ddr)} Gibps',
-                              textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: Colors.blue)),
+                          Text('${(context.watch<Calculation>().bps_calc_ddr).toStringAsFixed(2)} Gibps', textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: Colors.blue)),
                         ],
                       ),
                     ),
@@ -263,11 +336,12 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                   height: 30.0,
                 ),
                 Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Horizontal time',
+                        Text('One Horizontal time',
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -300,107 +374,17 @@ class _TconInputScreenState extends State<TconInputScreen> with AutomaticKeepAli
                         ),
                       ],
                     ),
-                    Text(
-                      '${NumberFormat('##.###').format(context.watch<Calculation>().horizontal_time)} us',
-                      style: const TextStyle(fontSize: 20),
+                    SizedBox(
+                      width: 20,
                     ),
+                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text('1H Time',
+                          style: const TextStyle(
+                            fontSize: 15,
+                          )),
+                      Text('${(context.watch<Calculation>().horizontal_time).toStringAsFixed(2)} us', textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: Colors.blue)),
+                    ])
                   ],
-                ),
-                const SizedBox(
-                  height: 30.0,
-                ),
-                Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Video Frame Buffer',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            )),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Text('compression\nratio(%)',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 17,
-                            )),
-                        SfSlider(
-                          value: storage_video_compression_ratio,
-                          min: 0,
-                          max: 80,
-                          showTicks: true,
-                          showLabels: true,
-                          showDividers: true,
-                          interval: 20,
-                          stepSize: 1,
-                          enableTooltip: true,
-                          shouldAlwaysShowTooltip: true,
-                          onChanged: (value) {
-                            setState(() {
-                              storage_video_compression_ratio = value;
-                              context.read<Calculation>().updateEach('storage_video_compression_ratio', value.toString());
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          'Storage',
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                        Text(
-                          '${NumberFormat('##.##').format(context.watch<Calculation>().storage_video_result_mibits)} Mbits',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                // Row(
-                //   crossAxisAlignment: CrossAxisAlignment.start,
-                //   children: [
-                //     ToggleSwitch(
-                //       minWidth: 100.0,
-                //       minHeight: 30,
-                //       initialLabelIndex: 0,
-                //       cornerRadius: 15.0,
-                //       activeFgColor: Colors.white,
-                //       inactiveBgColor: Colors.grey,
-                //       inactiveFgColor: Colors.white,
-                //       totalSwitches: 2,
-                //       labels: ['Use', 'Not Use'],
-                //       activeBgColors: [
-                //         [Colors.blue],
-                //         [Colors.blue],
-                //       ],
-                //       onToggle: (index) {
-                //         print('switched to: $index');
-                //       },
-                //     ),
-                //   ],
-                // ),
-                // Row(
-                //   children: [
-                //     Text(
-                //       '${NumberFormat('##.###').format(context.watch<BpsCalc>().bw_frame_buffer)} Gibps',
-                //       style: const TextStyle(fontSize: 20),
-                //     ),
-                //   ],
-                // ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  '${context.watch<Calculation>().ddr_frame_buffer.ceil()} ea of DDR Memory required \nwith ${(context.watch<Calculation>().margin_frame_buffer * 100).toStringAsFixed(2)}% of margin',
-                  style: const TextStyle(fontSize: 20),
                 ),
               ],
             ),

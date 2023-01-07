@@ -21,7 +21,7 @@ class Bottom extends StatelessWidget {
                   size: 18,
                 ),
                 child: Text(
-                  'Default Setting',
+                  'Input Parameter',
                   style: TextStyle(fontSize: 9),
                 ),
               ),
@@ -31,7 +31,7 @@ class Bottom extends StatelessWidget {
                   size: 18,
                 ),
                 child: Text(
-                  'Additional Setting',
+                  'Calculatrion',
                   style: TextStyle(fontSize: 9),
                 ),
               ),

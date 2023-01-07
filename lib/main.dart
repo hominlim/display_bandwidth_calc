@@ -35,6 +35,7 @@ class _MyAppState extends State<MyApp> {
     return ChangeNotifierProvider<Calculation>(
         create: (_) => Calculation(),
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Display Calculator',
           theme: ThemeData(
             primarySwatch: Colors.blue,

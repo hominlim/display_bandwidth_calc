@@ -1,13 +1,3 @@
-List modelList = [
-  {"resolution": "FHD60", "activeH": 1920, "blankH": 280, "activeV": 1080, "blankV": 45, "lanes": 2, "freqPerLane": 74.25, "dataWidth": 10, "colors": 3},
-  {"resolution": "FHD120", "activeH": 1920, "blankH": 280, "activeV": 1080, "blankV": 45, "lanes": 4, "freqPerLane": 74.25, "dataWidth": 10, "colors": 3},
-  {"resolution": "4K60", "activeH": 3840, "blankH": 560, "activeV": 2160, "blankV": 90, "lanes": 8, "freqPerLane": 74.25, "dataWidth": 10, "colors": 3},
-  {"resolution": "4K60", "activeH": 3840, "blankH": 560, "activeV": 2160, "blankV": 90, "lanes": 16, "freqPerLane": 74.25, "dataWidth": 10, "colors": 3},
-  {"resolution": "4K60", "activeH": 3840, "blankH": 560, "activeV": 2160, "blankV": 90, "lanes": 16, "freqPerLane": 89.1, "dataWidth": 10, "colors": 3},
-  {"resolution": "8K", "activeH": 7680, "blankH": 1320, "activeV": 4320, "blankV": 180, "lanes": 32, "freqPerLane": 74.25, "dataWidth": 10, "colors": 3},
-  {"resolution": "8K", "activeH": 7680, "blankH": 1320, "activeV": 4320, "blankV": 180, "lanes": 64, "freqPerLane": 74.25, "dataWidth": 10, "colors": 3},
-];
-
 class ModelInfo {
   String modelName = "";
   double activeH = 0;
@@ -21,8 +11,18 @@ class ModelInfo {
 
   ModelInfo(this.modelName, this.activeH, this.blankH, this.activeV, this.blankV, this.lanes, this.freqPerLane, this.dataWidth, this.colors);
 
-  @override
-  String toString() {
-    return 'Model Name : $modelName, column is $modelColumn, row is $modelRow';
+  List<dynamic> returnAsList() {
+    return [modelName, activeH, blankH, activeV, blankV, lanes, freqPerLane, dataWidth, colors];
   }
 }
+
+final modelList = [
+  ModelInfo('FHD60', 1920, 280, 1080, 45, 2, 74.25, 10, 3),
+  ModelInfo('FHD120', 1920, 280, 1080, 45, 4, 74.25, 10, 3),
+  ModelInfo('4K60', 3840, 560, 2160, 90, 8, 74.25, 10, 3),
+  ModelInfo('4K120', 3840, 560, 2160, 90, 16, 74.25, 10, 3),
+  ModelInfo('4K144', 3840, 560, 2160, 90, 16, 89.10, 10, 3),
+  ModelInfo('8K60', 7680, 1320, 4320, 80, 32, 74.25, 10, 3),
+  ModelInfo('8K120', 7680, 1120, 4320, 180, 64, 74.25, 10, 3),
+];
+var modelSelect = '4K120';

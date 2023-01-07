@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class Calculation with ChangeNotifier {
   //#region for 사용자 입력
-  // ----- Text Field of Main page ----
+  // ----- Text Field of Main page ----`
   double _number_of_column = 3840;
   double _number_of_row = 2160;
   double _number_of_hblank = 560;
@@ -36,13 +36,17 @@ class Calculation with ChangeNotifier {
 // ----- Variables for Calculation ----
   double _number_of_column_total = 0;
   double _number_of_row_total = 0;
-  double _fH = 0;
+  double _freq_total = 0;
 
+  double _fH = 0;
   double _fV = 0;
   double get fV => _fV;
 
-  double _bps_calc_result_gibps = 0;
-  double get bps_calc_result_gibps => _bps_calc_result_gibps;
+  double _vertical_blank_time = 0;
+  double get fVB => _vertical_blank_time;
+
+  // double _bps_calc_result_gibps = 0;
+  // double get bps_calc_result_gibps => _bps_calc_result_gibps;
 
   double _bps_calc_ddr = 0;
   double get bps_calc_ddr => _bps_calc_ddr;
@@ -72,6 +76,9 @@ class Calculation with ChangeNotifier {
   double get ddr_comp_data => _ddr_comp_data;
   double _margin_comp_data = 0;
   double get margin_comp_data => _margin_comp_data;
+
+  double _storage_comp_result_mibits = 0;
+  double get storage_comp_result_mibits => _storage_comp_result_mibits;
 
   void updateEach(String varName, String varValueString) {
     double varValue = double.parse(varValueString);
@@ -143,18 +150,26 @@ class Calculation with ChangeNotifier {
     // Total Clocks Calculation
     _number_of_column_total = _number_of_column + _number_of_hblank;
     _number_of_row_total = _number_of_row + _number_of_vblank;
+    _freq_total = _dclk_frequency * _number_of_lane;
 
-    _fH = (_dclk_frequency * _number_of_lane) / _number_of_column_total * 1000;
-    _fV = _fH / _number_of_row_total * 1000;
+    _fH = _freq_total / _number_of_column_total;
+    // print('${_fH * 1000} kHz');
+    _fV = _fH / _number_of_row_total;
+    // print('${_fV * 1000000} Hz');
 
     // Video Bandwidth
-    _bps_calc_result_gibps = _number_of_column_total * _number_of_row_total * _fV * _number_of_color * _data_width / 1024 / 1024 / 1024;
+    // _bps_calc_result_gibps = _number_of_column_total * _number_of_row_total * _fV * _number_of_color * _data_width / 1024 / 1024 / 1024;
 
     // DDR Bandwidth
     _bps_calc_ddr = _ddr_speed * _ddr_width / 1024;
 
-    // Horizontal time
-    _horizontal_time = (1 - _horizontal_time_margin / 100) * (_number_of_column_total) / (_dclk_frequency * _number_of_lane);
+    // Horizontal time (1H time)
+    _horizontal_time = (1 - _horizontal_time_margin / 100) / _fH;
+    // print('$_horizontal_time us');
+
+    // Vertical Blank time
+    _vertical_blank_time = _number_of_vblank / _fH;
+    // print('$_vertical_blank_time usec');
 
     // Video Frame Data One Line
     _video_data_to_read_write = (1 - _storage_video_compression_ratio / 100) * _number_of_column * _number_of_color * _data_width * 2;
@@ -162,7 +177,7 @@ class Calculation with ChangeNotifier {
     // Video Frame Data Storage
     _storage_video_result_mibits = _video_data_to_read_write * _number_of_row / 1024 / 1024;
 
-    // ----------- Result Text ------------
+    // ----------- Result Text  ------------
     // Frame memory Bandwidth required
     _bw_frame_buffer = _video_data_to_read_write / _horizontal_time / 1024;
     // Number of DDR memory
@@ -176,14 +191,19 @@ class Calculation with ChangeNotifier {
     _comp_mobility_data_to_read_total = (1 - _mobility_data_compression_ratio / 100) * _number_of_column * _number_of_color * _comp_mobility_data_to_read;
     // OLED data
     _comp_oled_data_to_read_total = (1 - _oled_data_compression_ratio / 100) * _number_of_column * _number_of_color * _comp_oled_data_to_read;
-    // Total data
+    // Total data per 1H
     _comp_data_to_read_total = _comp_vth_data_to_read_total + _comp_mobility_data_to_read_total + _comp_oled_data_to_read_total;
 
-    // ----------- Result Comment Text ------------
+    //Storage data of 1 set
+    _storage_comp_result_mibits = _comp_data_to_read_total * _number_of_row / 1024 / 1024;
+
+    // ----------- Result comment Text ------------
     // Compensation memory Bandwidth required
     _bw_comp_data = _comp_data_to_read_total / _horizontal_time / 1024;
+
     // Number of DDR Memory
     _ddr_comp_data = _bw_comp_data / _bps_calc_ddr;
+
     // Margin of Frame buffer bandwidth
     _margin_comp_data = 1 - _bw_comp_data / (_bps_calc_ddr * _ddr_comp_data.ceil());
 
